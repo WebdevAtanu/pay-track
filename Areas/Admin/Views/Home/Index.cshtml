@@ -1,0 +1,23 @@
+﻿@model List<AdminViewModel>
+
+<h1>Admin Dashboard</h1>
+
+<div class="">
+    <table class="table table-striped">
+        <tr>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Password</th>
+        </tr>
+        @foreach (var admin in Model)
+        {
+            <tr>
+                <td>@admin.Name</td>
+                <td>@admin.Phone</td>
+                <td>@admin.Email</td>
+                <td>@admin.Password</td>
+            </tr>
+        }
+    </table>
+</div>
