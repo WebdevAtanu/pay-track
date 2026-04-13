@@ -3,14 +3,17 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace payroll_mvc.Models
 {
-    [Table("Admin")]
-    public class Admin
+    [Table("Employee")]
+    public class Employee
     {
         [Key]
-        public Guid AdminId { get; set; }
+        public Guid EmployeeId { get; set; }
         public string? Name { get; set; }
         public string? Phone { get; set; }
         public string? Email { get; set; }
-        public string? Password { get; set; }
+        public Guid? DeptId { get; set; }
+        public DateTime? JoiningDate { get; set; }
+        public decimal? BasicSalary { get; set; }
+        public bool? IsActive { get; set; }
     }
 }

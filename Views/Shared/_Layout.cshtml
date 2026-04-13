@@ -5,71 +5,85 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - payroll_mvc</title>
 
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
     <link rel="stylesheet" href="~/css/site.css" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-
 </head>
 <body>
 
-    @* top bar *@
+    <!-- Top Navbar -->
     <nav class="navbar navbar-dark bg-dark px-3">
-        <button class="btn btn-outline-light" type="button"
+        <!-- Toggle only for mobile -->
+        <button class="btn btn-outline-light d-lg-none"
+                type="button"
                 data-bs-toggle="offcanvas"
                 data-bs-target="#sidebar">
             ☰
         </button>
+
+        <span class="navbar-brand ms-2">Payroll System</span>
     </nav>
 
-    @* side bar *@
-    <div class="offcanvas offcanvas-start text-bg-dark"
-         tabindex="-1"
-         id="sidebar">
+    <!-- Layout Wrapper -->
+    <div class="d-flex">
 
-        <div class="offcanvas-header custom-header">
-            <h5 class="offcanvas-title">Menu</h5>
-            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas"></button>
+        <!-- Sidebar -->
+        <div class="offcanvas-lg offcanvas-start bg-dark text-white min-vh-100"
+             tabindex="-1"
+             id="sidebar">
+
+            <!-- Mobile Header -->
+            <div class="offcanvas-header d-lg-none">
+                <h5 class="offcanvas-title">Menu</h5>
+                <button type="button"
+                        class="btn-close btn-close-white"
+                        data-bs-dismiss="offcanvas"></button>
+            </div>
+
+            <!-- Sidebar Body -->
+            <div class="offcanvas-body p-2">
+                <ul class="nav flex-column">
+
+                    <li class="nav-item">
+                        <a class="nav-link px-3 py-3 d-flex gap-2 align-items-center"
+                           asp-controller="Home"
+                           asp-action="Index">
+                            <i class="bi bi-clipboard-data-fill"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link px-3 py-3 d-flex gap-2 align-items-center"
+                           asp-area="Admin"
+                           asp-controller="Home"
+                           asp-action="Index">
+                            <i class="bi bi-person-circle"></i>
+                            <span>Admin Panel</span>
+                        </a>
+                    </li>
+
+                </ul>
+            </div>
         </div>
 
-        <div class="offcanvas-body p-2">
-            <ul class="nav flex-column">
+        <!-- Main Content -->
+        <div class="flex-grow-1 p-4">
+            <main role="main">
+                @RenderBody()
+            </main>
 
-                <li class="nav-item">
-                    <a class="nav-link px-3 py-3 custom-hover d-flex gap-2 align-items-center custom-radius"
-                       asp-area=""
-                       asp-controller="Home"
-                       asp-action="Index">
-                        <i class="bi bi-clipboard-data-fill"></i>
-                        <span>Dashboard</span>
-                    </a>
-                </li>
-
-                <li class="nav-item">
-                    <a class="nav-link px-3 py-3 custom-hover d-flex gap-2 align-items-center custom-radius"
-                       asp-area="Admin"
-                       asp-controller="Home"
-                       asp-action="Index">
-                        <i class="bi bi-person-circle"></i>
-                        <span> Admin Panel</span>
-                    </a>
-                </li>
-            </ul>
+            <!-- Footer -->
+            <footer class="text-center mt-4 text-muted">
+                <hr />
+                <p>&copy; 2026 - payroll_mvc</p>
+            </footer>
         </div>
+
     </div>
 
-    @* main content *@
-    <div class="container mt-4">
-        <main role="main">
-            @RenderBody()
-        </main>
-    </div>
-
-    @* footer *@
-    <footer class="text-center mt-4 text-muted">
-        <hr />
-        <p>&copy; 2026 - payroll_mvc</p>
-    </footer>
-
+    <!-- Bootstrap JS -->
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

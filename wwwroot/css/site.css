@@ -40,3 +40,30 @@ body {
     background-color: #084298;
     color: white;
 }
+
+#sidebar {
+    width: 280px;
+}
+
+/* Desktop behavior */
+@media (min-width: 992px) {
+    #sidebar {
+        position: static;
+        transform: none !important;
+        visibility: visible !important;
+    }
+}
+
+/* Sidebar link styles */
+.nav-link {
+    color: #fff;
+    border-radius: 8px;
+}
+
+    .nav-link:hover {
+        background-color: #495057;
+    }
+
+    .nav-link.active {
+        background-color: #0d6efd;
+    }
