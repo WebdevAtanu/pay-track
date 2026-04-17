@@ -43,10 +43,11 @@
 
             <!-- Sidebar Body -->
             <div class="offcanvas-body p-2">
-                <ul class="nav flex-column">
+                <ul class="nav flex-column w-full">
 
                     <li class="nav-item">
                         <a class="nav-link px-3 py-3 d-flex gap-2 align-items-center"
+                            asp-area=""
                            asp-controller="Home"
                            asp-action="Index">
                             <i class="bi bi-clipboard-data-fill"></i>
@@ -69,7 +70,7 @@
         </div>
 
         <!-- Main Content -->
-        <div class="flex-grow-1 p-4">
+        <div class="flex-grow-1 p-2">
             <main role="main">
                 @RenderBody()
             </main>

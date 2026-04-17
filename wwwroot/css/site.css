@@ -18,7 +18,8 @@ html {
 }
 
 body {
-    margin-bottom: 60px;
+   height:100vh;
+   overflow:hidden;
 }
 
 .custom-hover {
@@ -43,6 +44,10 @@ body {
 
 #sidebar {
     width: 280px;
+}
+
+.w-full{
+    width:100% !important;
 }
 
 /* Desktop behavior */

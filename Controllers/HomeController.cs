@@ -32,12 +32,30 @@ namespace payroll_mvc.Controllers
                 .Where(s => s.Status != null && s.Status.ToLower() == "pending")
                 .Sum(s => (decimal?)s.NetSalary) ?? 0;
 
+            var recentPayroll = (from s in _context.Salaries
+                                 where s.Status != null && s.Status.ToLower() == "settled"
+                                 orderby s.Month descending
+
+                                 join e in _context.Employees
+                                 on s.EmployeeId equals e.EmployeeId into empSalary
+                                 from es in empSalary.DefaultIfEmpty()                        
+
+                                 select new RecentPayrolls
+                                 {
+                                     Name = es != null ? es.Name : "Unknown",
+                                     Month = s.Month,
+                                     Gross = s.Basic,
+                                     Deduction = s.Deduction,
+                                     Net = s.NetSalary
+                                 }).Take(10);
+
             var model = new DashboardViewModel
             {
                 EmployeeCount = employeeCount,
                 TotalSalary = totalSalary,
                 SettledSalary = settledSalary,
-                PendingSalary = pendingSalary
+                PendingSalary = pendingSalary,
+                RecentPayrolls = recentPayroll.ToList()
             };
 
             return View(model);
