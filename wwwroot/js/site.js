@@ -1,4 +1,19 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿function toggleForm() {
+    const loginForm = document.getElementById("loginForm");
+    const signupForm = document.getElementById("signupForm");
+    const formTitle = document.getElementById("formTitle");
+    const toggleText = document.getElementById("toggleText");
 
-// Write your JavaScript code.
+    loginForm.classList.toggle("active");
+    signupForm.classList.toggle("active");
+
+    if (loginForm.classList.contains("active")) {
+        formTitle.innerText = "Login";
+        toggleText.innerHTML = `Don't have an account?
+            <span class="toggle-link" onclick="toggleForm()">Sign Up</span>`;
+    } else {
+        formTitle.innerText = "Sign Up";
+        toggleText.innerHTML = `Already have an account?
+            <span class="toggle-link" onclick="toggleForm()">Login</span>`;
+    }
+}

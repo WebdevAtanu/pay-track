@@ -19,6 +19,11 @@ namespace payroll_mvc.Controllers
 
         public IActionResult Index()
         {
+            return View();
+        }
+
+        public IActionResult Dashboard()
+        {
             var employeeCount = _context.Employees.Count();
 
             var totalSalary = _context.Salaries
@@ -59,11 +64,6 @@ namespace payroll_mvc.Controllers
             };
 
             return View(model);
-        }
-
-        public IActionResult Privacy()
-        {
-            return View();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
