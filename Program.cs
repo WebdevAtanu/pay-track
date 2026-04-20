@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using payroll_mvc.Data;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,6 +9,14 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<AppDBContext>(options=>
 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddAuthentication("cookieAuth")
+    .AddCookie("cookieAuth", (option) =>
+    {
+        option.LoginPath = "/";
+        option.AccessDeniedPath = "/";
+        option.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+    });
 
 var app = builder.Build();
 
@@ -23,7 +32,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(

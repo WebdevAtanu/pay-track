@@ -1,8 +1,12 @@
-using System.Diagnostics;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using payroll_mvc.Data;
 using payroll_mvc.Models;
 using payroll_mvc.ViewModels;
+using System.Diagnostics;
+using System.Security.Claims;
+using BCrypt.Net;
 
 namespace payroll_mvc.Controllers
 {
@@ -22,6 +26,71 @@ namespace payroll_mvc.Controllers
             return View();
         }
 
+        [HttpPost("register")]
+        public IActionResult Register(RegisterViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var existingUser = _context.Admins.FirstOrDefault(u => u.Email == model.Email);
+                if (existingUser != null)
+                {
+                    ModelState.AddModelError("", "Email already exists");
+                    return View("Index", model);
+                }
+
+                string passwordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
+
+                Admin admin = new Admin
+                {
+                    AdminId = Guid.NewGuid(),
+                    Name = model.Name,
+                    Phone = "",
+                    Email = model.Email,
+                    Password = passwordHash,
+                };
+
+                _context.Admins.Add(admin);
+                _context.SaveChanges();
+                return RedirectToAction("Index");
+            }
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost("login")]
+        public async Task<IActionResult> Login(LoginViewModel model)
+        {
+            var existingUser = _context.Admins.FirstOrDefault(u => u.Email == model.Email);
+
+            if (existingUser == null)
+            {
+                ModelState.AddModelError("", "Invalid Details Provided");
+                return View("Index", model);
+            }
+
+            if (BCrypt.Net.BCrypt.Verify(model.Password, existingUser.Password))
+            {
+                var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Email, model.Email??""),
+                new Claim(ClaimTypes.Name, existingUser.Name??"") // optional
+            };
+                var identity = new ClaimsIdentity(claims, "cookieAuth");
+                var principal = new ClaimsPrincipal(identity);
+                await HttpContext.SignInAsync("cookieAuth", principal);
+                return RedirectToAction("Dashboard", "Home");
+            }
+            ModelState.AddModelError("", "Invalid Details Provided");
+            return View("Index", model);
+        }
+
+        // LOGOUT
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync("cookieAuth");
+            return RedirectToAction("Index");
+        }
+
+        [Authorize]
         public IActionResult Dashboard()
         {
             var employeeCount = _context.Employees.Count();
@@ -43,7 +112,7 @@ namespace payroll_mvc.Controllers
 
                                  join e in _context.Employees
                                  on s.EmployeeId equals e.EmployeeId into empSalary
-                                 from es in empSalary.DefaultIfEmpty()                        
+                                 from es in empSalary.DefaultIfEmpty()
 
                                  select new RecentPayrolls
                                  {
