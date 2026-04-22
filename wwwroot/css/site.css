@@ -99,3 +99,24 @@ body {
         transform: translateY(0);
         pointer-events: all;
     }
+
+/*=========================== employee details ========================*/
+.data-table {
+    height: 75vh;
+    overflow: auto;
+    border: 1px solid #b6afaf;
+    padding: 0.8rem;
+}
+
+td.details-control {
+    cursor: pointer;
+}
+
+    td.details-control::before {
+        content: '+';
+        font-weight: bold;
+    }
+
+tr.shown td.details-control::before {
+    content: '-';
+}
