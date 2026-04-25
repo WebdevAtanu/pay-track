@@ -1,0 +1,86 @@
+﻿@model payroll_mvc.Areas.Admin.Models.EmployeeViewModel
+
+@{
+    ViewData["Title"] = "Add Employee";
+}
+
+@if (TempData.ContainsKey("ErrorMessage"))
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<h4 class="mb-4">Add Employee</h4>
+
+<form asp-action="Add" method="post" class="card p-4 shadow-sm">
+
+    <div class="row">
+        <!-- Name -->
+        <div class="col-md-6 mb-3">
+            <div class="input-group">
+                <span class="input-group-text" id="name">Name</span>
+                <input type="text" class="form-control" placeholder="John Doe" aria-label="name" aria-describedby="name" asp-for="Name">
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+        </div>
+
+        <!-- Phone -->
+        <div class="col-md-6 mb-3">
+            <div class="input-group">
+                <span class="input-group-text" id="name">Phone</span>
+                <input type="tel" class="form-control" placeholder="Enter Phone" aria-label="phone" aria-describedby="phone" asp-for="Phone">
+                <span asp-validation-for="Phone" class="text-danger"></span>
+            </div>
+        </div>
+
+        <!-- Email -->
+        <div class="col-md-6 mb-3">
+            <div class="input-group">
+                <span class="input-group-text" id="email">Email</span>
+                <input type="email" class="form-control" placeholder="john.doe@gmail.com" aria-label="email" aria-describedby="email" asp-for="Email">
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+        </div>
+
+        <!-- Department (Readonly or dropdown if you want later) -->
+        @* <select class="form-select" aria-label="Default select example">
+            <option selected>Open this select menu</option>
+            <option value="1">One</option>
+            <option value="2">Two</option>
+            <option value="3">Three</option>
+        </select> *@
+
+        <!-- Joining Date -->
+        <div class="col-md-6 mb-3">
+            <div class="input-group">
+                <span class="input-group-text">Joining Date</span>
+                <input type="date" class="form-control" asp-for="JoiningDate" />
+                <span asp-validation-for="JoiningDate" class="text-danger"></span>
+            </div>
+        </div>
+
+        <!-- Salary -->
+        <div class="col-md-6 mb-3">
+            <div class="input-group">
+                <span class="input-group-text" id="salary">Basic Salary</span>
+                <input type="number" class="form-control" placeholder="12000" aria-label="salary" aria-describedby="salary" asp-for="BasicSalary">
+                <span asp-validation-for="BasicSalary" class="text-danger"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Buttons -->
+    <div class="mt-3">
+        <button type="submit" class="btn btn-primary">Add</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </div>
+
+</form>
+
+@* 
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial"); // with this validation happens instantly in browser
+    }
+} *@
