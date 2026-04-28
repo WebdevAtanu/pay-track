@@ -104,3 +104,15 @@ $(document).ready(function () {
     });
 
 });
+
+//==================================== confirm delete modal =====================================
+
+var deleteModal = document.getElementById('deleteModal');
+
+deleteModal.addEventListener('show.bs.modal', function (event) {
+    var button = event.relatedTarget;
+    var id = button.getAttribute('data-id');
+
+    var form = document.getElementById('deleteForm');
+    form.action = '/Employee/Delete/' + id;
+});

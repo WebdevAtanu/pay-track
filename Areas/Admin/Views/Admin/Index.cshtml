@@ -29,10 +29,12 @@
             <li><a class="dropdown-item rounded-1 py-1 bg-danger text-white fw-semibold" asp-action="Logout">Logout</a></li>
         </ul>
     </div>
-
 </div>
 
-<h4>Employee Details</h4>
+<div class="d-flex justify-content-between mb-2">
+    <h4>Employee Details</h4>
+    <a asp-area="Employee" asp-controller="Attendance" asp-action="Index" class="btn border btn btn-info px-4 py-2 text-decoration-none">Attendance</a>
+</div>
 
 <div class="data-table">
     <table id="employeeTable" class="display">

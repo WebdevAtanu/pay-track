@@ -1,0 +1,72 @@
+﻿@model List<AttendanceViewModel>
+
+@{
+    var selectedDate = Model.FirstOrDefault()?.Date?.ToString("yyyy-MM-dd")
+                       ?? DateTime.Today.ToString("yyyy-MM-dd");
+}
+
+<div class="container mt-4">
+
+    <!-- Date Selector -->
+    <form method="get" asp-action="Index" class="row mb-4 gap-2">
+        <div class="col-md-4">
+            <label class="form-label fw-bold">Select Date</label>
+            <input type="date" name="today" value="@selectedDate" class="form-control" />
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Fetch Status</button>
+        </div>
+    </form>
+
+    <!-- Attendance Form -->
+    <form method="post" asp-action="SaveAttendance">
+
+        <input type="hidden" name="Date" value="@selectedDate" />
+
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Employee Code</th>
+                    <th>Name</th>
+                    <th>Current Status</th>
+                    <th>Update Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @for (int i = 0; i < Model.Count; i++)
+                {
+                    <tr>
+                        <td>
+                            @Model[i].EmpCode
+                            <input type="hidden" asp-for="@Model[i].EmployeeId" />
+                        </td>
+
+                        <td>
+                            @Model[i].Name
+                            <input type="hidden" asp-for="@Model[i].Name" />
+                        </td>
+
+                        <td>
+                            <span class="badge bg-secondary">
+                                @Model[i].Status
+                            </span>
+                        </td>
+
+                        <td>
+                            <select asp-for="@Model[i].Status" class="form-select">
+                                <option value="Present">Present</option>
+                                <option value="Absent">Absent</option>
+                                <option value="Leave">Leave</option>
+                            </select>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <button type="submit" class="btn btn-success px-4">
+            Save Attendance
+        </button>
+    </form>
+
+</div>

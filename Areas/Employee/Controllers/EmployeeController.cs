@@ -17,6 +17,58 @@ namespace payroll_mvc.Areas.Employee.Controllers
             _context = context;
         }
 
+        private string GenerateEmpCode(string empName)
+        {
+            if (string.IsNullOrWhiteSpace(empName))
+                throw new ArgumentException("Employee name cannot be empty");
+
+            // Split name into words
+            var words = empName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
+
+            string prefix;
+
+            if (words.Length >= 2)
+            {
+                // Take first letter of first 2 words
+                prefix = $"{char.ToUpper(words[0][0])}{char.ToUpper(words[1][0])}";
+            }
+            else
+            {
+                // Only one word → take first letter
+                prefix = char.ToUpper(words[0][0]).ToString();
+            }
+
+            // Fetch last ID from DB based on prefix
+            var lastId = _context.Employees
+                .Where(e => e.EmpCode.StartsWith(prefix))
+                .OrderByDescending(e => e.EmpCode)
+                .Select(e => e.EmpCode)
+                .FirstOrDefault();
+
+            int nextNumber = 1;
+
+            if (!string.IsNullOrEmpty(lastId))
+            {
+                // Extract numeric part
+                var numberPart = lastId.Substring(prefix.Length);
+                nextNumber = int.Parse(numberPart) + 1;
+            }
+
+            // Padding logic
+            string formattedNumber;
+
+            if (prefix.Length == 2)
+            {
+                formattedNumber = nextNumber.ToString("D4"); // AD0001
+            }
+            else
+            {
+                formattedNumber = nextNumber.ToString("D5"); // A00001
+            }
+
+            return $"{prefix}{formattedNumber}";
+        }
+
         public async Task<IActionResult> Index()
         {
             var employeeDetails = await (from e in _context.Employees
@@ -31,6 +83,7 @@ namespace payroll_mvc.Areas.Employee.Controllers
                                          select new EmployeeViewModel
                                          {
                                              EmployeeId = e.EmployeeId,
+                                             EmpCode = e.EmpCode,
                                              Name = e.Name,
                                              Phone = e.Phone,
                                              Email = e.Email,
@@ -72,10 +125,12 @@ namespace payroll_mvc.Areas.Employee.Controllers
             }
 
             Guid employeeId = Guid.NewGuid();
+            string empCode = GenerateEmpCode(model.Name ?? "No Name");
 
             _context.Employees.Add(new Models.Employee
             {
                 EmployeeId = employeeId,
+                EmpCode = empCode,
                 Name = model.Name,
                 Phone = model.Phone,
                 Email = model.Email,
@@ -167,6 +222,22 @@ namespace payroll_mvc.Areas.Employee.Controllers
         }
 
         [HttpPost]
+        public async Task<IActionResult> ActiveToggle(Guid id)
+        {
+            var employee = await _context.Employees
+                .FirstOrDefaultAsync(e => e.EmployeeId == id);
+
+            if (employee == null)
+                return NotFound();
+
+            employee.IsActive = !employee.IsActive;
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
         public async Task<IActionResult> Delete(Guid id)
         {
             var employee = await _context.Employees
@@ -175,7 +246,7 @@ namespace payroll_mvc.Areas.Employee.Controllers
             if (employee == null)
                 return NotFound();
 
-            employee.IsActive = false;
+            _context.Employees.Remove(employee);
 
             await _context.SaveChangesAsync();
 
