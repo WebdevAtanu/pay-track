@@ -11,5 +11,6 @@ namespace payroll_mvc.Models
         public Guid EmployeeId { get; set; }
         public DateTime? Date { get; set; }
         public string? Status { get; set; }
+        public string? Note { get; set; }
     }
 }

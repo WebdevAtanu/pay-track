@@ -58,7 +58,6 @@
                                 </td>
                                 <td class="d-flex gap-1">
                                     <a asp-action="Edit" asp-route-id="@item.EmployeeId" class="btn btn-sm btn-warning w-full">Edit</a>
-                                    <form asp-action="Delete" asp-route-id="@item.EmployeeId" method="post" style="display:inline;" class="w-full">
                                         <button type="button"
                                                 class="btn btn-sm btn-danger w-full"
                                                 data-bs-toggle="modal"
@@ -66,7 +65,6 @@
                                                 data-id="@item.EmployeeId">
                                             Delete
                                         </button>
-                                    </form>
                                 </td>
                             </tr>
                         }

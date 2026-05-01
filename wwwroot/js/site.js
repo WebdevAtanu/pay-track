@@ -114,5 +114,5 @@ deleteModal.addEventListener('show.bs.modal', function (event) {
     var id = button.getAttribute('data-id');
 
     var form = document.getElementById('deleteForm');
-    form.action = '/Employee/Delete/' + id;
+    form.action = '/Employee/Employee/Delete/' + id;
 });

@@ -5,7 +5,7 @@
                        ?? DateTime.Today.ToString("yyyy-MM-dd");
 }
 
-<div class="container mt-4">
+<div class="container mt-2">
 
     <!-- Date Selector -->
     <form method="get" asp-action="Index" class="row mb-4 gap-2">
@@ -18,55 +18,83 @@
         </div>
     </form>
 
-    <!-- Attendance Form -->
-    <form method="post" asp-action="SaveAttendance">
+    @if (Model.Count == 0)
+    {
+        <div class="bg-secondary p-2 d-flex justify-content-center">
+            <h5 class="text-dark">No Attendance Data Found</h5>
+        </div>
+    }
 
-        <input type="hidden" name="Date" value="@selectedDate" />
+    else
+    {
+        <!-- Attendance Form -->
+        <form method="post" asp-action="SaveAttendance">
 
-        <table class="table table-bordered table-striped">
-            <thead class="table-dark">
-                <tr>
-                    <th>Employee Code</th>
-                    <th>Name</th>
-                    <th>Current Status</th>
-                    <th>Update Status</th>
-                </tr>
-            </thead>
-            <tbody>
-                @for (int i = 0; i < Model.Count; i++)
-                {
+            <input type="hidden" name="Date" value="@selectedDate" />
+
+            <table class="table table-bordered table-striped">
+                <thead class="table-dark">
                     <tr>
-                        <td>
-                            @Model[i].EmpCode
-                            <input type="hidden" asp-for="@Model[i].EmployeeId" />
-                        </td>
-
-                        <td>
-                            @Model[i].Name
-                            <input type="hidden" asp-for="@Model[i].Name" />
-                        </td>
-
-                        <td>
-                            <span class="badge bg-secondary">
-                                @Model[i].Status
-                            </span>
-                        </td>
-
-                        <td>
-                            <select asp-for="@Model[i].Status" class="form-select">
-                                <option value="Present">Present</option>
-                                <option value="Absent">Absent</option>
-                                <option value="Leave">Leave</option>
-                            </select>
-                        </td>
+                        <th>Date</th>
+                        <th>Employee Code</th>
+                        <th>Name</th>
+                        <th>Current Status</th>
+                        <th>Comment</th>
+                        <th>Update Status</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @for (int i = 0; i < Model.Count; i++)
+                    {
+                        <tr>
+                            <td>@Model[i].Date?.ToString("dd-MM-yyyy")</td>
+                            <td>
+                                @Model[i].EmpCode
+                                <input type="hidden" asp-for="@Model[i].EmployeeId" />
+                            </td>
 
-        <button type="submit" class="btn btn-success px-4">
-            Save Attendance
-        </button>
-    </form>
+                            <td>
+                                @Model[i].Name
+                                <input type="hidden" asp-for="@Model[i].Name" />
+                            </td>
 
+                            <td>
+                                @{
+                                    var status = Model[i].Status;
+                                    var badgeClass = status switch
+                                    {
+                                        "Present" => "bg-success text-white",
+                                        "Absent" => "bg-danger text-white",
+                                        "Leave" => "bg-warning text-white",
+                                        _ => "bg-secondary"
+                                    };
+                                }
+
+                                <span class="badge @badgeClass">
+                                    @status
+                                </span>
+                            </td>
+
+                            <td>
+                                <textarea asp-for="@Model[i].Note" rows="1" class="form-control" style="resize: none;"></textarea>
+                            </td>
+
+                            <td>
+                                <select asp-for="@Model[i].Status" class="form-select">
+                                    <option value="Present">Present</option>
+                                    <option value="Absent">Absent</option>
+                                    <option value="Leave">Leave</option>
+                                </select>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="d-flex justify-content-end">
+                <button type="submit" class="btn btn-success px-4">
+                    Save Attendance
+                </button>
+            </div>
+        </form>
+    }
 </div>

@@ -22,12 +22,13 @@ namespace payroll_mvc.Areas.Employee.Controllers
         {
             var attendanceDetails = await (
                 from e in _context.Employees
+                where e.IsActive == true
 
-                join at in _context.Attendances
-                    on e.EmployeeId equals at.EmployeeId into eatJoin
-                from eat in eatJoin.DefaultIfEmpty()
-                where eat == null ||
-                (eat.Date >= date.Date && eat.Date < date.Date.AddDays(1))
+                from eat in _context.Attendances
+                    .Where(a => a.EmployeeId == e.EmployeeId &&
+                                a.Date >= date.Date &&
+                                a.Date < date.Date.AddDays(1))
+                    .DefaultIfEmpty()
 
                 select new AttendanceViewModel
                 {
@@ -35,7 +36,8 @@ namespace payroll_mvc.Areas.Employee.Controllers
                     EmpCode = e.EmpCode,
                     Name = e.Name,
                     Date = eat != null ? eat.Date : date,
-                    Status = eat != null ? eat.Status : "Absent"
+                    Status = eat != null ? eat.Status : "Absent",
+                    Note = eat != null ? eat.Note : ""
                 }
             ).ToListAsync();
 
@@ -63,6 +65,7 @@ namespace payroll_mvc.Areas.Employee.Controllers
                 if (existing != null)
                 {
                     existing.Status = item.Status;
+                    existing.Note = item.Note;
                 }
                 else
                 {
@@ -70,7 +73,8 @@ namespace payroll_mvc.Areas.Employee.Controllers
                     {
                         EmployeeId = item.EmployeeId,
                         Date = date,
-                        Status = item.Status
+                        Status = item.Status,
+                        Note = item.Note
                     });
                 }
             }

@@ -75,17 +75,18 @@ namespace payroll_mvc.Areas.Admin.Controllers
                     // Salary (list)
                     EmployeeSalaries = g
                         .Where(x => x.es != null)
+                        .GroupBy(x => new {x.es.Month, x.es.Year})
                         .Select(x => new EmployeeSalary
                         {
-                            SalaryId = x.es.SalaryId,
-                            Month = x.es.Month,
-                            Year = x.es.Year,
-                            Basic = x.es.Basic,
-                            HRA = x.es.HRA,
-                            Bonus = x.es.Bonus,
-                            Deduction = x.es.Deduction,
-                            NetSalary = x.es.NetSalary,
-                            Status = x.es.Status
+                            SalaryId = x.First().es.SalaryId,
+                            Month = x.Key.Month,
+                            Year = x.Key.Year,
+                            Basic = x.Sum(x => x.es.Basic),
+                            HRA = x.Sum(x => x.es.HRA),
+                            Bonus = x.Sum(x => x.es.Bonus),
+                            Deduction = x.Sum(x => x.es.Deduction),
+                            NetSalary = x.Sum(x => x.es.NetSalary),
+                            Status = x.First().es.Status 
                         })
                         .Distinct()
                         .ToList()
