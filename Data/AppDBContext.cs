@@ -14,5 +14,7 @@ namespace payroll_mvc.Data
         public DbSet<Department> Departments { get; set; }
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Salary> Salaries { get; set; }
+        public DbSet<Status> Statuses { get; set; }
+        public DbSet<MapDepartment> MapDepartments { get; set; }
     }
 }

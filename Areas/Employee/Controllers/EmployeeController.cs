@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using payroll_mvc.Areas.Admin.Models;
+using payroll_mvc.Areas.Admin.ViewModels;
 using payroll_mvc.Data;
 using payroll_mvc.Models;
 using payroll_mvc.ViewModels;
@@ -90,7 +90,6 @@ namespace payroll_mvc.Areas.Employee.Controllers
                                              DeptId = ed != null ? ed.DeptId : (Guid?)null,
                                              DepartmentName = ed != null ? ed.DeptName : null,
                                              JoiningDate = e.JoiningDate,
-                                             BasicSalary = es.Basic,
                                              IsActive = e.IsActive
                                          }).ToListAsync();
             return View(employeeDetails);
@@ -139,14 +138,6 @@ namespace payroll_mvc.Areas.Employee.Controllers
                 IsActive = true
             });
 
-            // create salary if not exists
-            _context.Salaries.Add(new Salary
-            {
-                EmployeeId = employeeId,
-                Basic = model.BasicSalary ?? 0
-            });
-
-
             await _context.SaveChangesAsync();
 
             return RedirectToAction("Index");
@@ -159,10 +150,6 @@ namespace payroll_mvc.Areas.Employee.Controllers
                                  on e.DeptId equals d.DeptId into empDept
                               from ed in empDept.DefaultIfEmpty()
 
-                              join s in _context.Salaries
-                                on e.EmployeeId equals s.EmployeeId into empSal
-                              from es in empSal.DefaultIfEmpty()
-
                               where e.EmployeeId == id
 
                               select new EmployeeViewModel
@@ -174,7 +161,6 @@ namespace payroll_mvc.Areas.Employee.Controllers
                                   DeptId = ed != null ? ed.DeptId : (Guid?)null,
                                   DepartmentName = ed != null ? ed.DeptName : null,
                                   JoiningDate = e.JoiningDate,
-                                  BasicSalary = es.Basic,
                                   IsActive = e.IsActive
                               }).FirstOrDefaultAsync();
             return View(data);
@@ -191,30 +177,12 @@ namespace payroll_mvc.Areas.Employee.Controllers
             if (employee == null)
                 return NotFound();
 
-            var salary = await _context.Salaries
-                .FirstOrDefaultAsync(s => s.EmployeeId == employee.EmployeeId);
-
             // Update employee
             employee.Name = model.Name;
             employee.Phone = model.Phone;
             employee.Email = model.Email;
             //employee.DeptId = model.DeptId;
             employee.IsActive = model.IsActive;
-
-            // Update salary correctly
-            if (salary != null)
-            {
-                salary.Basic = model.BasicSalary ?? 0;
-            }
-            else
-            {
-                // create salary if not exists
-                _context.Salaries.Add(new Salary
-                {
-                    EmployeeId = employee.EmployeeId,
-                    Basic = model.BasicSalary ?? 0
-                });
-            }
 
             await _context.SaveChangesAsync();
 

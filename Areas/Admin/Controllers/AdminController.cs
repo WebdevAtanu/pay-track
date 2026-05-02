@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using payroll_mvc.Areas.Admin.Models;
+using payroll_mvc.Areas.Admin.ViewModels;
 using payroll_mvc.Data;
 
 namespace payroll_mvc.Areas.Admin.Controllers
@@ -86,7 +86,7 @@ namespace payroll_mvc.Areas.Admin.Controllers
                             Bonus = x.Sum(x => x.es.Bonus),
                             Deduction = x.Sum(x => x.es.Deduction),
                             NetSalary = x.Sum(x => x.es.NetSalary),
-                            Status = x.First().es.Status 
+                            Status = x.First().es.Status??"Pending"
                         })
                         .Distinct()
                         .ToList()

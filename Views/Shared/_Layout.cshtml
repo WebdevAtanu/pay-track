@@ -21,7 +21,7 @@
                 type="button"
                 data-bs-toggle="offcanvas"
                 data-bs-target="#sidebar">
-            ☰
+            <i class="bi bi-list"></i>
         </button>
 
         <span class="navbar-brand ms-2">Payroll System</span>
@@ -45,55 +45,61 @@
 
             <!-- Sidebar Body -->
             <div class="offcanvas-body p-2">
-                <ul class="nav flex-column w-full">
+                <div class="w-full">
+                    <ul class="nav flex-column w-full">
 
-                    <li class="nav-item">
-                        <a class="nav-link px-3 py-3 d-flex gap-2 align-items-center"
-                           asp-area=""
-                           asp-controller="Home"
-                           asp-action="Dashboard">
-                            <i class="bi bi-clipboard-data-fill"></i>
-                            <span>Dashboard</span>
-                        </a>
-                    </li>
+                        @await Html.PartialAsync("_Menu",new MenuViewModel {
+                        Area = "",
+                                                Controller = "Home",
+                                                Action = "Dashboard",
+                                                IconClass = "bi bi-clipboard-data-fill",
+                                                MenuName = "Dashboard"
+                                                })
 
-                    <li class="nav-item">
-                        <a class="nav-link px-3 py-3 d-flex gap-2 align-items-center"
-                           asp-area="Admin"
-                           asp-controller="Admin"
-                           asp-action="Index">
-                            <i class="bi bi-person-circle"></i>
-                            <span>Admin Panel</span>
-                        </a>
-                    </li>
+                        @await Html.PartialAsync("_Menu",new MenuViewModel {
+                                                Area = "Admin",
+                                                Controller = "Admin",
+                                                Action = "Index",
+                                                IconClass = "bi bi-person-circle",
+                                                MenuName = "Admin Panel"
+                                                })
 
-                    <li class="nav-item">
-                        <a class="nav-link px-3 py-3 d-flex gap-2 align-items-center"
-                           asp-area="Employee"
-                           asp-controller="Employee"
-                           asp-action="Index">
-                            <i class="bi bi-people-fill"></i>
-                            <span>Employees</span>
-                        </a>
-                    </li>
+                        @await Html.PartialAsync("_Menu",new MenuViewModel {
+                                                Area = "Employee",
+                                                Controller = "Attendance",
+                                                Action = "Index",
+                                                IconClass = "bi bi-card-checklist",
+                                                MenuName = "Attendance"
+                                                })
+                    </ul>
+                    <hr />
+                    <ul class="nav flex-column w-full">
 
-                    <li class="nav-item">
-                        <a class="nav-link px-3 py-3 d-flex gap-2 align-items-center"
-                           asp-area="Employee"
-                           asp-controller="Attendance"
-                           asp-action="Index">
-                            <i class="bi bi-card-checklist"></i>
-                            <span>Attendance</span>
-                        </a>
-                    </li>
 
-                </ul>
+                        @await Html.PartialAsync("_Menu",new MenuViewModel {
+                                                Area = "Employee",
+                                                Controller = "Employee",
+                                                Action = "Index",
+                                                IconClass = "bi bi-people-fill",
+                                                MenuName = "Employees"
+                                                })
+
+                        @await Html.PartialAsync("_Menu",new MenuViewModel {
+                                                Area = "Admin",
+                                                Controller = "Department",
+                                                Action = "Index",
+                                                IconClass = "bi bi-person-workspace",
+                                                MenuName = "Department"
+                                                })
+                    </ul>
+                </div>
             </div>
         </div>
 
         <!-- Main Content -->
         <div class="flex-grow-1">
             <main role="main" class="container-fluid pt-2">
+                @await Html.PartialAsync("_Navbar")
                 @RenderBody()
             </main>
         </div>

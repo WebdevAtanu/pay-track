@@ -25,7 +25,6 @@
                         <th>Email</th>
                         <th>Department</th>
                         <th>Joining Date</th>
-                        <th>Salary</th>
                         <th>Status</th>
                         <th class="text-center">Action</th>
                     </tr>
@@ -46,7 +45,6 @@
                                 <td>@item.Email</td>
                                 <td>@item.DepartmentName</td>
                                 <td>@item.JoiningDate?.ToString("yyyy-mm-dd")</td>
-                                <td>₹ @item.BasicSalary</td>
                                 <td class="@statusClass">
                                     @* <a asp-action="ActiveToggle" asp-route-id="@item.EmployeeId" class="@statusClass">@statusText</a> *@
 

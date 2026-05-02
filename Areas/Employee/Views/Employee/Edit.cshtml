@@ -1,4 +1,4 @@
-﻿@model payroll_mvc.Areas.Admin.Models.EmployeeViewModel
+﻿@model EmployeeViewModel
 
 @{
     ViewData["Title"] = "Edit Employee";
@@ -47,15 +47,6 @@
             <option value="2">Two</option>
             <option value="3">Three</option>
         </select> *@
-
-        <!-- Salary -->
-        <div class="col-md-6 mb-3">
-            <div class="input-group">
-                <span class="input-group-text" id="salary">Basic Salary</span>
-                <input type="number" class="form-control" placeholder="12000" aria-label="salary" aria-describedby="salary" asp-for="BasicSalary">
-                <span asp-validation-for="BasicSalary" class="text-danger"></span>
-            </div>
-        </div>
     </div>
 
     <!-- Buttons -->

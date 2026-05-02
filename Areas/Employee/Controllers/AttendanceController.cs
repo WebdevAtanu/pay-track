@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using payroll_mvc.Areas.Admin.Models;
+using payroll_mvc.Areas.Admin.ViewModels;
 using payroll_mvc.Data;
 using payroll_mvc.Models;
 using payroll_mvc.ViewModels;

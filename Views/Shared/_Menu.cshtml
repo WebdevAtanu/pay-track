@@ -1,0 +1,11 @@
+﻿@model MenuViewModel;
+
+<li class="nav-item">
+    <a class="nav-link px-3 py-3 d-flex gap-2 align-items-center"
+       asp-area="@Model.Area"
+       asp-controller="@Model.Controller"
+       asp-action="@Model.Action">
+        <i class="@Model.IconClass"></i>
+        <span>@Model.MenuName</span>
+    </a>
+</li>
