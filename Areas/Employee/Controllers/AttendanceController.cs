@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using payroll_mvc.Areas.Admin.ViewModels;
+using payroll_mvc.Controllers;
 using payroll_mvc.Data;
 using payroll_mvc.Models;
 using payroll_mvc.ViewModels;
@@ -9,7 +10,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace payroll_mvc.Areas.Employee.Controllers
 {
     [Area("Employee")]
-    public class AttendanceController : Controller
+    public class AttendanceController : BaseController
     {
         private readonly AppDBContext _context;
 

@@ -33,7 +33,7 @@ namespace payroll_mvc.Areas.Admin.ViewModels
     {
         public Guid SalaryId { get; set; }
         public string? Month { get; set; }
-        public int? Year { get; set; }
+        public string? Year { get; set; }
         public decimal? Basic { get; set; }
         public decimal? HRA { get; set; }
         public decimal? Bonus { get; set; }

@@ -7,6 +7,7 @@
         public decimal? SettledSalary { get; set; }
         public decimal? PendingSalary { get; set; }
         public List<RecentPayrolls>? RecentPayrolls { get; set; }
+        public MonthWiseAmount? MonthWiseAmounts { get; set; }
     }
 
     public class CardData
@@ -25,5 +26,11 @@
         public decimal? Gross { get; set; }
         public decimal? Deduction { get; set; }
         public decimal? Net { get; set; }
+    }
+
+    public class MonthWiseAmount
+    {
+        public List<string>? Month { get; set; }
+        public List<decimal>? Amount { get; set; }
     }
 }

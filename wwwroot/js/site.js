@@ -116,3 +116,28 @@ deleteModal.addEventListener('show.bs.modal', function (event) {
     var form = document.getElementById('deleteForm');
     form.action = '/Employee/Employee/Delete/' + id;
 });
+
+//==================================== attendance search function =====================================
+
+//document.getElementById("searchInput").addEventListener("keyup", function () {
+//    console.log("dd");
+//    let filter = this.value.toLowerCase(); // get the input text
+//    let rows = document.querySelectorAll("#attendanceTable tbody tr");
+
+//    rows.forEach(row => {
+//        let empCode = row.cells[1].innerText.toLowerCase();
+//        let name = row.cells[2].innerText.toLowerCase();
+
+//        if (empCode.includes(filter) || name.includes(filter)) {
+//            row.style.display = "";
+//        } else {
+//            row.style.display = "none";
+//        }
+//    });
+//});
+
+function clearSearch() {
+    let input = document.getElementById("searchInput");
+    input.value = "";
+    input.dispatchEvent(new Event("keyup")); //It fakes a key press event
+}

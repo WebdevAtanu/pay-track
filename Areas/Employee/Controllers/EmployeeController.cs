@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using payroll_mvc.Areas.Admin.ViewModels;
+using payroll_mvc.Controllers;
 using payroll_mvc.Data;
 using payroll_mvc.Models;
 using payroll_mvc.ViewModels;
@@ -8,7 +9,7 @@ using payroll_mvc.ViewModels;
 namespace payroll_mvc.Areas.Employee.Controllers
 {
     [Area("Employee")]
-    public class EmployeeController : Controller
+    public class EmployeeController : BaseController
     {
         private readonly AppDBContext _context;
 
@@ -75,10 +76,6 @@ namespace payroll_mvc.Areas.Employee.Controllers
                                          join d in _context.Departments
                                             on e.DeptId equals d.DeptId into empDept
                                          from ed in empDept.DefaultIfEmpty()
-
-                                         join s in _context.Salaries
-                                           on e.EmployeeId equals s.EmployeeId into empSal
-                                         from es in empSal.DefaultIfEmpty()
 
                                          select new EmployeeViewModel
                                          {

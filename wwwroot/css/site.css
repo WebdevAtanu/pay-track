@@ -6,6 +6,7 @@ html {
 
 body {
     height: 100vh;
+    padding-bottom:2rem;
     overflow: hidden;
 }
 
@@ -51,6 +52,11 @@ body {
     .nav-link.active {
         background-color: #0d6efd;
     }
+
+.active-menu {
+    background-color: #ffffffe0;
+    color: black !important;
+}
 
 /*=========================== Login/signup ========================*/
 .hero-container {

@@ -2,14 +2,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using payroll_mvc.Areas.Admin.ViewModels;
+using payroll_mvc.Controllers;
 using payroll_mvc.Data;
 using payroll_mvc.Models;
 
 namespace payroll_mvc.Areas.Admin.Controllers
 {
-    [Authorize]
     [Area("Admin")]
-    public class DepartmentController : Controller
+    public class DepartmentController : BaseController
     {
         private readonly AppDBContext _context;
 

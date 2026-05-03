@@ -4,27 +4,45 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// Add services
 builder.Services.AddControllersWithViews();
 
-builder.Services.AddDbContext<AppDBContext>(options=>
-options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddDbContext<AppDBContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// Authentication + Authorization
 builder.Services.AddAuthentication("cookieAuth")
-    .AddCookie("cookieAuth", (option) =>
+    .AddCookie("cookieAuth", options =>
     {
-        option.LoginPath = "/";
-        option.AccessDeniedPath = "/";
-        option.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+        options.LoginPath = "/Home/AccessDenied";
+        options.AccessDeniedPath = "/Home/AccessDenied";
+        options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
+
+        // Custom response handling
+        options.Events = new CookieAuthenticationEvents
+        {
+            OnRedirectToLogin = context =>
+            {
+                context.Response.Redirect("/Home/AccessDenied");
+                return Task.CompletedTask;
+            },
+            OnRedirectToAccessDenied = context =>
+            {
+                context.Response.Redirect("/Home/AccessDenied");
+                return Task.CompletedTask;
+            }
+        };
     });
+
+// Add Authorization 
+builder.Services.AddAuthorization();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Pipeline
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -32,9 +50,11 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Routes
 app.MapControllerRoute(
     name: "areas",
     pattern: "{area:exists}/{controller=Home}/{action=Index}/{id?}"

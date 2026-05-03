@@ -6,17 +6,31 @@
 }
 
 <div class="container mt-2">
+    <div class="row mb-3 align-items-end">
 
-    <!-- Date Selector -->
-    <form method="get" asp-action="Index" class="row mb-4 gap-2">
-        <div class="col-md-4">
-            <label class="form-label fw-bold">Select Date</label>
+        <!-- Date Selector -->
+        <div class="col-md-4 mb-md-0 mb-2">
+            <label class="form-label fw-bold small">Select Date</label>
             <input type="date" name="today" value="@selectedDate" class="form-control" />
         </div>
-        <div class="col-md-2 d-flex align-items-end">
-            <button type="submit" class="btn btn-primary w-100">Fetch Status</button>
+
+        <!-- Button -->
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-primary w-100">
+                Fetch Status
+            </button>
         </div>
-    </form>
+
+        <!-- Search -->
+        <div class="col-md-4 ms-auto">
+            <label class="form-label fw-bold small">Search</label>
+            <div class="d-flex align-items-center gap-2">
+                <input type="text" id="searchInput" class="form-control" placeholder="Search..." />
+                <button type="button" onclick="clearSearch()" class="btn btn-outline-secondary">Clear</button>
+            </div>
+        </div>
+
+    </div>
 
     @if (Model.Count == 0)
     {
@@ -32,64 +46,66 @@
 
             <input type="hidden" name="Date" value="@selectedDate" />
 
-            <table class="table table-bordered table-striped">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Date</th>
-                        <th>Employee Code</th>
-                        <th>Name</th>
-                        <th>Current Status</th>
-                        <th>Comment</th>
-                        <th>Update Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for (int i = 0; i < Model.Count; i++)
-                    {
+            <div class="overflow-auto" style="max-height:60vh;">
+                <table class="table table-bordered table-striped" id="attendanceTable">
+                    <thead class="table-dark">
                         <tr>
-                            <td>@Model[i].Date?.ToString("dd-MM-yyyy")</td>
-                            <td>
-                                @Model[i].EmpCode
-                                <input type="hidden" asp-for="@Model[i].EmployeeId" />
-                            </td>
-
-                            <td>
-                                @Model[i].Name
-                                <input type="hidden" asp-for="@Model[i].Name" />
-                            </td>
-
-                            <td>
-                                @{
-                                    var status = Model[i].Status;
-                                    var badgeClass = status switch
-                                    {
-                                        "Present" => "bg-success text-white",
-                                        "Absent" => "bg-danger text-white",
-                                        "Leave" => "bg-warning text-white",
-                                        _ => "bg-secondary"
-                                    };
-                                }
-
-                                <span class="badge @badgeClass">
-                                    @status
-                                </span>
-                            </td>
-
-                            <td>
-                                <textarea asp-for="@Model[i].Note" rows="1" class="form-control" style="resize: none;"></textarea>
-                            </td>
-
-                            <td>
-                                <select asp-for="@Model[i].Status" class="form-select">
-                                    <option value="Present">Present</option>
-                                    <option value="Absent">Absent</option>
-                                    <option value="Leave">Leave</option>
-                                </select>
-                            </td>
+                            <th>Date</th>
+                            <th>Employee Code</th>
+                            <th>Name</th>
+                            <th>Current Status</th>
+                            <th>Comment</th>
+                            <th>Update Status</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.Count; i++)
+                        {
+                            <tr>
+                                <td>@Model[i].Date?.ToString("dd-MM-yyyy")</td>
+                                <td>
+                                    @Model[i].EmpCode
+                                    <input type="hidden" asp-for="@Model[i].EmployeeId" />
+                                </td>
+
+                                <td>
+                                    @Model[i].Name
+                                    <input type="hidden" asp-for="@Model[i].Name" />
+                                </td>
+
+                                <td>
+                                    @{
+                                        var status = Model[i].Status;
+                                        var badgeClass = status switch
+                                        {
+                                            "Present" => "bg-success text-white",
+                                            "Absent" => "bg-danger text-white",
+                                            "Leave" => "bg-warning text-white",
+                                            _ => "bg-secondary"
+                                        };
+                                    }
+
+                                    <span class="badge @badgeClass">
+                                        @status
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <textarea asp-for="@Model[i].Note" rows="1" class="form-control" style="resize: none;"></textarea>
+                                </td>
+
+                                <td>
+                                    <select asp-for="@Model[i].Status" class="form-select">
+                                        <option value="Present">Present</option>
+                                        <option value="Absent">Absent</option>
+                                        <option value="Leave">Leave</option>
+                                    </select>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
             <div class="d-flex justify-content-end">
                 <button type="submit" class="btn btn-success px-4">
                     Save Attendance
@@ -98,3 +114,21 @@
         </form>
     }
 </div>
+
+<script>
+        document.getElementById("searchInput").addEventListener("keyup", function () {
+        let filter = this.value.toLowerCase(); // get the input text
+        let rows = document.querySelectorAll("#attendanceTable tbody tr");
+
+        rows.forEach(row => {
+            let empCode = row.cells[1].innerText.toLowerCase();
+            let name = row.cells[2].innerText.toLowerCase();
+
+            if (empCode.includes(filter) || name.includes(filter)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    });
+</script>

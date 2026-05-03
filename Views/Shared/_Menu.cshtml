@@ -1,7 +1,18 @@
-﻿@model MenuViewModel;
+﻿@model MenuViewModel
+
+@{
+    var currentArea = ViewContext.RouteData.Values["area"]?.ToString();
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+
+    bool isActive =
+        (currentArea ?? "") == (Model.Area ?? "") &&
+        currentController == Model.Controller &&
+        currentAction == Model.Action;
+}
 
 <li class="nav-item">
-    <a class="nav-link px-3 py-3 d-flex gap-2 align-items-center"
+    <a class="nav-link px-3 py-3 d-flex gap-2 align-items-center @(isActive ? "active-menu" : "")"
        asp-area="@Model.Area"
        asp-controller="@Model.Controller"
        asp-action="@Model.Action">

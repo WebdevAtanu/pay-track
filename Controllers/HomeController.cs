@@ -123,13 +123,37 @@ namespace payroll_mvc.Controllers
                                      Net = s.NetSalary
                                  }).Take(10);
 
+            var monthOrder = new List<string>
+            {
+                "Jan","Feb","Mar","Apr","May","Jun",
+                "Jul","Aug","Sep","Oct","Nov","Dec"
+            };
+
+            var monthWiseAmount = _context.Salaries
+            .GroupBy(s => s.Month)
+            .Select(g => new
+            {
+                Month = g.Key,
+                Amount = g.Sum(x => x.NetSalary)
+            })
+            .ToList()
+            .OrderBy(x => monthOrder.IndexOf(x.Month))
+            .ToList();
+
+            var chartData = new MonthWiseAmount
+            {
+                Month = monthWiseAmount.Select(x => x.Month ?? "").ToList(),
+                Amount = monthWiseAmount.Select(x => x.Amount ?? 0).ToList()
+            };
+
             var model = new DashboardViewModel
             {
                 EmployeeCount = employeeCount,
                 TotalSalary = totalSalary,
                 SettledSalary = settledSalary,
                 PendingSalary = pendingSalary,
-                RecentPayrolls = recentPayroll.ToList()
+                RecentPayrolls = recentPayroll.ToList(),
+                MonthWiseAmounts = chartData
             };
 
             return View(model);
@@ -139,6 +163,12 @@ namespace payroll_mvc.Controllers
         public IActionResult Error()
         {
             return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+        }
+
+        public IActionResult AccessDenied()
+        {
+            ViewBag.Message = "You are not authorized to access this page.";
+            return View();
         }
     }
 }
