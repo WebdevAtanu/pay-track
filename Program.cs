@@ -1,11 +1,15 @@
 using Microsoft.EntityFrameworkCore;
 using payroll_mvc.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using payroll_mvc.middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews(options =>
+{
+    options.Filters.Add<ExceptionHandler>();
+});
 
 builder.Services.AddDbContext<AppDBContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

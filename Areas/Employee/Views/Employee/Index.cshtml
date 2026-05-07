@@ -19,6 +19,7 @@
             <table class="table table-hover align-middle">
                 <thead class="table-dark sticky-top">
                     <tr>
+                        <th>Serial</th>
                         <th>Code</th>
                         <th>Name</th>
                         <th>Phone</th>
@@ -33,12 +34,14 @@
                 <tbody>
                     @if (Model != null && Model.Any())
                     {
+                        int i = 1;
                         foreach (var item in Model)
-                        {
+                        {                            
                             var statusClass = item.IsActive == true ? "text-success fw-semibold" : "text-danger fw-semibold";
                             var statusText = item.IsActive == true ? "Active" : "Inactive";
 
                             <tr>
+                                <td>@i</td>
                                 <td>@item.EmpCode</td>
                                 <td>@item.Name</td>
                                 <td>@item.Phone</td>
@@ -59,12 +62,14 @@
                                         <button type="button"
                                                 class="btn btn-sm btn-danger w-full"
                                                 data-bs-toggle="modal"
-                                                data-bs-target="#deleteModal"
-                                                data-id="@item.EmployeeId">
+                                                data-bs-target="#employeeDeleteModal"
+                                                data-id="@item.EmployeeId"
+                                                data-name="@item.Name">
                                             Delete
                                         </button>
                                 </td>
                             </tr>
+                            i++;
                         }
                     }
                     else
@@ -85,8 +90,8 @@
 </div>
 
 
-@* ========================================= confirm delete modal =================================== *@
-<div class="modal fade" id="deleteModal" tabindex="-1">
+@* ========================================= employee delete modal =================================== *@
+<div class="modal fade" id="employeeDeleteModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
 
@@ -96,11 +101,11 @@
             </div>
 
             <div class="modal-body">
-                Are you sure you want to delete this employee?
+                Are you sure you want to delete this employee - <span id="empNameText"></span>?
             </div>
 
             <div class="modal-footer">
-                <form id="deleteForm" method="post">
+                <form id="empDeleteForm" method="post">
                     <button type="submit" class="btn btn-danger">Yes, Delete</button>
                 </form>
                 <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>

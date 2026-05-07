@@ -1,4 +1,6 @@
-﻿namespace payroll_mvc.Areas.Admin.ViewModels
+﻿using payroll_mvc.Models;
+
+namespace payroll_mvc.Areas.Admin.ViewModels
 {
     public class EmployeeViewModel
     {
@@ -11,5 +13,6 @@
         public string? DepartmentName { get; set; }
         public DateTime? JoiningDate { get; set; }
         public bool? IsActive { get; set; }
+        public List<Department>? Departments{ get; set; }
     }
 }

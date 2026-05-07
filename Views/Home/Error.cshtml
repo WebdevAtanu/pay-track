@@ -1,0 +1,33 @@
+﻿@model ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<div class="container mt-5">
+    <div class="card shadow border-0">
+        <div class="card-body text-center p-5">
+
+            <h1 class="text-danger mb-3">
+                Something went wrong
+            </h1>
+
+            <p class="text-muted">
+                An unexpected error occurred.
+            </p>
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="alert alert-danger mt-4">
+                    @TempData["ErrorMessage"]
+                </div>
+            }
+
+            <a asp-controller="Home"
+               asp-action="Index"
+               class="btn btn-primary mt-3">
+                Go Home
+            </a>
+
+        </div>
+    </div>
+</div>

@@ -105,17 +105,20 @@ $(document).ready(function () {
 
 });
 
-//==================================== confirm delete modal =====================================
+//==================================== employee delete modal =====================================
 
-var deleteModal = document.getElementById('deleteModal');
+var empDeleteModal = document.getElementById('employeeDeleteModal');
+if (empDeleteModal) {
+    empDeleteModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var id = button.getAttribute('data-id');
+        var empName = button.getAttribute('data-name');
+        document.getElementById('empNameText').innerText = empName;
 
-deleteModal.addEventListener('show.bs.modal', function (event) {
-    var button = event.relatedTarget;
-    var id = button.getAttribute('data-id');
-
-    var form = document.getElementById('deleteForm');
-    form.action = '/Employee/Employee/Delete/' + id;
-});
+        var form = document.getElementById('empDeleteForm');
+        form.action = '/Employee/Employee/Delete/' + id;
+    });
+}
 
 //==================================== attendance search function =====================================
 
@@ -140,4 +143,20 @@ function clearSearch() {
     let input = document.getElementById("searchInput");
     input.value = "";
     input.dispatchEvent(new Event("keyup")); //It fakes a key press event
+}
+
+//==================================== department delete modal =====================================
+
+var deptDeleteModal = document.getElementById('deptDeleteModal');
+
+if (deptDeleteModal) {
+    deptDeleteModal.addEventListener('show.bs.modal', function (event) {
+        var button = event.relatedTarget;
+        var id = button.getAttribute('data-id');
+        var deptName = button.getAttribute('data-name');
+        document.getElementById('deptNameText').innerText = deptName;
+
+        var form = document.getElementById('deptDeleteForm');
+        form.action = '/Admin/Department/Delete/' + id;
+    });
 }

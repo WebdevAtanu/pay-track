@@ -88,13 +88,18 @@ namespace payroll_mvc.Areas.Employee.Controllers
                                              DepartmentName = ed != null ? ed.DeptName : null,
                                              JoiningDate = e.JoiningDate,
                                              IsActive = e.IsActive
-                                         }).ToListAsync();
+                                         }).OrderBy(e=>e.Name).ToListAsync();
             return View(employeeDetails);
         }
 
         public IActionResult Add()
         {
-            return View(new EmployeeViewModel());
+            var departments = _context.Departments.Where(d => d.IsActive == true).ToList();
+            var employeeModel = new EmployeeViewModel
+            {
+                Departments = departments,
+            };
+            return View(employeeModel);
         }
 
         private async Task<bool> IsEmailExist(string email)
@@ -142,6 +147,8 @@ namespace payroll_mvc.Areas.Employee.Controllers
 
         public async Task<IActionResult> Edit(Guid id)
         {
+            var departments = _context.Departments.Where(d => d.IsActive == true).ToList();
+            
             var data = await (from e in _context.Employees
                               join d in _context.Departments
                                  on e.DeptId equals d.DeptId into empDept
@@ -158,7 +165,8 @@ namespace payroll_mvc.Areas.Employee.Controllers
                                   DeptId = ed != null ? ed.DeptId : (Guid?)null,
                                   DepartmentName = ed != null ? ed.DeptName : null,
                                   JoiningDate = e.JoiningDate,
-                                  IsActive = e.IsActive
+                                  IsActive = e.IsActive,
+                                  Departments = departments,
                               }).FirstOrDefaultAsync();
             return View(data);
 
@@ -178,7 +186,7 @@ namespace payroll_mvc.Areas.Employee.Controllers
             employee.Name = model.Name;
             employee.Phone = model.Phone;
             employee.Email = model.Email;
-            //employee.DeptId = model.DeptId;
+            employee.DeptId = model.DeptId;
             employee.IsActive = model.IsActive;
 
             await _context.SaveChangesAsync();
