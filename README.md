@@ -58,3 +58,11 @@ The system includes the following core entities:
 - Department: Defines organizational units within the company
 - Attendance: Tracks daily attendance records for employees
 - Salary: Contains monthly salary information including basic pay, allowances, bonuses, and deductions
+
+## Screen Shots
+
+|  | |
+|---|---|
+| ![Payroll](./screens/home.png) | ![Payroll](./screens/dashboard.png) |
+| ![Payroll](./screens/employee.png) | ![Payroll](./screens/add.png) |
+| ![Payroll](./screens/attendance.png) |  |
