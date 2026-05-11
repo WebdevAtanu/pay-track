@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using OpenCvSharp;
 using payroll_mvc.Areas.Admin.ViewModels;
 using payroll_mvc.Controllers;
 using payroll_mvc.Data;
@@ -83,6 +84,21 @@ namespace payroll_mvc.Areas.Employee.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction("Index", new { today = date });
+        }
+      
+        [HttpPost("save-attendance")]
+        public IActionResult MarkAttendance()
+        {
+            Attendance attendance = new Attendance()
+            {
+                EmployeeId = Guid.NewGuid(),
+            };
+
+            _context.Attendances.Add(attendance);
+
+            _context.SaveChanges();
+
+            return Ok();
         }
     }
 }

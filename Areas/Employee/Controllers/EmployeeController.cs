@@ -88,7 +88,7 @@ namespace payroll_mvc.Areas.Employee.Controllers
                                              DepartmentName = ed != null ? ed.DeptName : null,
                                              JoiningDate = e.JoiningDate,
                                              IsActive = e.IsActive
-                                         }).OrderBy(e=>e.Name).ToListAsync();
+                                         }).OrderBy(e => e.Name).ToListAsync();
             return View(employeeDetails);
         }
 
@@ -148,7 +148,7 @@ namespace payroll_mvc.Areas.Employee.Controllers
         public async Task<IActionResult> Edit(Guid id)
         {
             var departments = _context.Departments.Where(d => d.IsActive == true).ToList();
-            
+
             var data = await (from e in _context.Employees
                               join d in _context.Departments
                                  on e.DeptId equals d.DeptId into empDept
@@ -224,6 +224,46 @@ namespace payroll_mvc.Areas.Employee.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction("Index");
+        }
+
+        public IActionResult RegisterFace(Guid id)
+        {
+            var model = new EmpFaceData
+            {
+                EmployeeId = id
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult SaveEmpFace([FromBody] EmpFaceData model)
+        {
+            var employee = _context.Employees
+                .FirstOrDefault(x => x.EmployeeId == model.EmployeeId);
+
+            if (employee is not null)
+            {
+                employee.FaceDescriptor = model.Descriptor;
+            }
+
+            _context.SaveChanges();
+
+            return Ok();
+        }
+
+        [HttpGet("get-face")]
+        public IActionResult GetEmpFace(Guid employeeId)
+        {
+            var employee = _context.Employees
+                .FirstOrDefault(x => x.EmployeeId == employeeId);
+
+            if (employee == null)
+            {
+                return NotFound();
+            }
+
+            return Json(employee.FaceDescriptor);
         }
     }
 }

@@ -12,6 +12,7 @@ namespace payroll_mvc.Models
         public string? Name { get; set; }
         public string? Phone { get; set; }
         public string? Email { get; set; }
+        public string? FaceDescriptor { get; set; }
         public Guid? DeptId { get; set; }
         public DateTime? JoiningDate { get; set; }
         public bool? IsActive { get; set; }

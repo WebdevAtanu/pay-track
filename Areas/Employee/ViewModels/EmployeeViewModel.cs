@@ -13,6 +13,12 @@ namespace payroll_mvc.Areas.Admin.ViewModels
         public string? DepartmentName { get; set; }
         public DateTime? JoiningDate { get; set; }
         public bool? IsActive { get; set; }
-        public List<Department>? Departments{ get; set; }
+        public List<Department>? Departments { get; set; }
+    }
+
+    public class EmpFaceData
+    {
+        public Guid EmployeeId { get; set; }
+        public string Descriptor { get; set; } = "";
     }
 }

@@ -1,0 +1,157 @@
+﻿@model EmpFaceData
+
+@{
+    ViewData["Title"] = "Face Registration";
+}
+
+<style>
+
+    video {
+        width: 100%;
+    }
+
+    .status-text {
+        font-size: 14px;
+        color: #6c757d;
+    }
+
+</style>
+
+<div class="container">
+
+    <div class="card">
+        <div class="card-body p-4">
+
+            <p class="text-center text-muted mb-4">
+                Position your face properly in front of the camera
+            </p>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <video id="video" autoplay muted></video>
+
+                    <div class="text-center mt-2">
+                        <span id="statusText" class="status-text">
+                            Loading...
+                        </span>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div>
+                        <p>emp details</p>
+                        <p>emp details</p>
+                        <p>emp details</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-4 d-flex justify-content-end">
+
+                <button class="btn btn-primary"
+                        onclick="registerFace()"
+                        id="registerBtn">
+
+                    Register Face
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    window.onload = async function () {
+        const video = document.getElementById("video");
+        const statusText = document.getElementById("statusText");
+        const registerBtn = document.getElementById("registerBtn");
+
+        try {
+            const MODEL_URL = '@Url.Content("~/models")';
+            statusText.innerText = "Loading face models...";
+
+            await Promise.all([
+                faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+                faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+                faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
+            ]);
+
+            navigator.mediaDevices.getUserMedia({
+                video: true
+            })
+
+            .then(stream => {
+                video.srcObject = stream;
+                statusText.innerText = "Camera Ready";
+            })
+
+            .catch(err => {
+                console.error(err);
+                statusText.innerText = "Camera access denied";
+            });
+        }
+
+        catch (error) {
+            console.error(error);
+            statusText.innerText = "Failed to load models";
+        }
+
+        window.registerFace = async function () {
+            try {
+                registerBtn.disabled = true;
+                registerBtn.innerText = "Processing...";
+                statusText.innerText = "Detecting face...";
+
+                const detection = await faceapi
+                    .detectSingleFace(
+                        video,
+                        new faceapi.TinyFaceDetectorOptions()
+                    )
+                    .withFaceLandmarks()
+                    .withFaceDescriptor();
+
+                if (!detection) {
+                    statusText.innerText = "No face detected";
+                    registerBtn.disabled = false;
+                    registerBtn.innerText = "Register Face";
+                    return;
+                }
+
+                const descriptor = Array.from(detection.descriptor);
+
+                const response = await fetch('/Employee/Employee/SaveEmpFace', {
+
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        employeeId: "@Model.EmployeeId",
+                        descriptor: JSON.stringify(descriptor)
+                    })
+                });
+
+                if (response.ok) {
+                    alert("Face Registered Successfully");
+                    statusText.innerText = "Face Registered Successfully";
+                }
+                else {
+                    statusText.innerText = "Registration Failed";
+                }
+            }
+            catch (error) {
+                console.error(error);
+                statusText.innerText = "Something went wrong";
+            }
+            finally {
+                registerBtn.disabled = false;
+                registerBtn.innerText = "Register Face";
+            }
+        }
+    }
+
+</script>
