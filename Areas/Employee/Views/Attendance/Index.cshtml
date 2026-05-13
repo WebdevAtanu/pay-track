@@ -1,4 +1,4 @@
-﻿@* @model List<AttendanceViewModel>
+﻿@model List<AttendanceViewModel>
 
 @{
     var selectedDate = Model.FirstOrDefault()?.Date?.ToString("yyyy-MM-dd")
@@ -54,8 +54,9 @@
                             <th>Employee Code</th>
                             <th>Name</th>
                             <th>Current Status</th>
-                            <th>Comment</th>
-                            <th>Update Status</th>
+                            @* <th>Comment</th>
+                            <th>Update Status</th> *@
+                            <th>Attendance</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -90,7 +91,7 @@
                                     </span>
                                 </td>
 
-                                <td>
+                                @* <td>
                                     <textarea asp-for="@Model[i].Note" rows="1" class="form-control" style="resize: none;"></textarea>
                                 </td>
 
@@ -100,17 +101,25 @@
                                         <option value="Absent">Absent</option>
                                         <option value="Leave">Leave</option>
                                     </select>
+                                </td> *@
+
+                                <td>
+                                    <a asp-action="FaceAttendance"
+                                       asp-route-id="@Model[i].EmployeeId"
+                                       class="btn btn-sm btn-warning w-full">
+                                        Scan Face
+                                    </a>
                                 </td>
                             </tr>
                         }
                     </tbody>
                 </table>
             </div>
-            <div class="d-flex justify-content-end">
+            @* <div class="d-flex justify-content-end">
                 <button type="submit" class="btn btn-success px-4">
                     Save Attendance
                 </button>
-            </div>
+            </div> *@
         </form>
     }
 </div>
@@ -131,88 +140,5 @@
             }
         });
     });
-</script> *@
-
-@{
-    ViewBag.Title = "Attendance";
-}
-
-<h2>Face Attendance</h2>
-
-<video id="video" width="400" autoplay></video>
-
-<br />
-<br />
-
-<button onclick="verifyFace()">
-    Mark Attendance
-</button>
-
-<script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
-
-<script>
-
-    const video = document.getElementById("video");
-
-    Promise.all([
-        faceapi.nets.tinyFaceDetector.loadFromUri('~/models'),
-        faceapi.nets.faceLandmark68Net.loadFromUri('~/models'),
-        faceapi.nets.faceRecognitionNet.loadFromUri('~/models')
-    ])
-    .then(startVideo);
-
-    function startVideo() {
-
-        navigator.mediaDevices.getUserMedia({
-            video: {}
-        })
-        .then(stream => {
-            video.srcObject = stream;
-        });
-    }
-
-    async function verifyFace() {
-
-        const detection = await faceapi
-            .detectSingleFace(
-                video,
-                new faceapi.TinyFaceDetectorOptions()
-            )
-            .withFaceLandmarks()
-            .withFaceDescriptor();
-
-        if(!detection)
-        {
-            alert("No face detected");
-            return;
-        }
-
-        const currentDescriptor = detection.descriptor;
-
-        const response = await fetch(
-            '/Attendance/GetEmployeeFace?employeeId=1'
-        );
-
-        const savedDescriptor = await response.json();
-
-        const distance = faceapi.euclideanDistance(
-            currentDescriptor,
-            new Float32Array(savedDescriptor)
-        );
-
-        if(distance < 0.5)
-        {
-            alert("Attendance Marked");
-
-            // save attendance
-            await fetch('/Attendance/MarkAttendance', {
-                method: 'POST'
-            });
-        }
-        else
-        {
-            alert("Face Not Matched");
-        }
-    }
-
 </script>
+

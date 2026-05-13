@@ -9,4 +9,10 @@
         public string? Status { get; set; }
         public string? Note { get; set; }
     }
+
+    public class AttendanceRequest
+    {
+        public Guid EmployeeId { get; set; }
+        public DateTime Date { get; set; }
+    }
 }

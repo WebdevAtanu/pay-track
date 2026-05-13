@@ -1,0 +1,246 @@
+﻿@model EmpFaceData
+
+@{
+    ViewBag.Title = "Attendance";
+}
+
+<style>
+
+    video {
+        width: 100%;
+    }
+
+    .status-text {
+        font-size: 14px;
+        color: #6c757d;
+    }
+
+</style>
+
+<div class="container">
+
+    <div class="card">
+        <div class="card-body p-4">
+
+            <p class="text-center text-muted mb-4">
+                Verify employee face to mark attendance
+            </p>
+
+            <div class="row">
+
+                <div class="col-md-6 d-flex flex-column justify-content-center align-items-center">
+
+                    <div class="w-50">
+                        <video id="video" autoplay muted></video>
+                    </div>
+
+                    <div class="text-center mt-2">
+                        <span id="statusText" class="status-text">
+                            Loading...
+                        </span>
+                    </div>
+
+                </div>
+
+                <div class="col-md-6">
+
+                    <table class="table table-bordered h-100">
+                        <tbody>
+                            <tr>
+                                <th>Employee Code</th>
+                                <td>@Model.EmpCode</td>
+                            </tr>
+
+                            <tr>
+                                <th>Name</th>
+                                <td>@Model.Name</td>
+                            </tr>
+
+                            <tr>
+                                <th>Email</th>
+                                <td>@Model.Email</td>
+                            </tr>
+
+                            <tr>
+                                <th>Phone</th>
+                                <td>@Model.Phone</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+
+            </div>
+
+            <div class="mt-4 d-flex justify-content-end gap-2">
+
+                <a asp-action="Index"
+                   class="btn btn-secondary">
+                    Back
+                </a>
+
+                <button class="btn btn-primary"
+                        onclick="verifyFace()"
+                        id="attendanceBtn">
+
+                    Mark Attendance
+
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<script>
+
+    window.onload = async function () {
+
+        const video = document.getElementById("video");
+        const statusText = document.getElementById("statusText");
+        const attendanceBtn = document.getElementById("attendanceBtn");
+
+        try {
+
+            const MODEL_URL = '@Url.Content("~/models")'; // Using Url.Content() converts it into a proper application path.
+
+            statusText.innerText = "Loading face models...";
+
+            await Promise.all([
+                faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+                faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+                faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
+            ]);
+
+            navigator.mediaDevices.getUserMedia({
+                video: true
+            })
+
+            .then(stream => {
+                video.srcObject = stream;
+                statusText.innerText = "Camera Ready";
+            })
+
+            .catch(err => {
+                console.error(err);
+                statusText.innerText = "Camera access denied";
+                statusText.style.color = "red";
+            });
+
+        }
+        catch (error) {
+
+            console.error(error);
+            statusText.innerText = "Failed to load models";
+            statusText.style.color = "red";
+        }
+
+        window.verifyFace = async function () {
+
+            try {
+
+                attendanceBtn.disabled = true;
+                attendanceBtn.innerText = "Verifying...";
+
+                statusText.innerText = "Detecting face...";
+                statusText.style.color = "blue";
+
+                const detection = await faceapi
+                    .detectSingleFace(
+                        video,
+                        new faceapi.TinyFaceDetectorOptions()
+                    )
+                    .withFaceLandmarks()
+                    .withFaceDescriptor();
+
+                if (!detection) {
+
+                    statusText.innerText = "No face detected";
+                    statusText.style.color = "red";
+
+                    attendanceBtn.disabled = false;
+                    attendanceBtn.innerText = "Mark Attendance";
+
+                    return;
+                }
+
+                const currentDescriptor = detection.descriptor;
+
+                    if (!'@Model.Descriptor') {
+
+                    statusText.innerText = "No registered face found";
+                    statusText.style.color = "red";
+
+                    return;
+                }
+                const savedDescriptor = JSON.parse('@Html.Raw(Model.Descriptor)');
+
+                const distance = faceapi.euclideanDistance(
+                    currentDescriptor,
+                    new Float32Array(savedDescriptor)
+                );
+
+                if (distance < 0.5) {
+
+                           const attendanceResponse = await fetch(
+                            '/Employee/Attendance/MarkAttendance',
+                            {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify({
+                                    employeeId: "@Model.EmployeeId",
+                                    date: "@DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss")"
+                                })
+                            }
+                        );
+
+                    if (attendanceResponse.ok) {
+
+                        statusText.innerText =
+                            "Attendance Marked Successfully";
+
+                        statusText.style.color = "green";
+
+                        attendanceBtn.innerText =
+                            "Attendance Marked";
+
+                        attendanceBtn.classList.remove("btn-primary");
+                        attendanceBtn.classList.add("btn-success");
+                    }
+                    else {
+
+                        statusText.innerText =
+                            "Failed to mark attendance";
+
+                        statusText.style.color = "red";
+                    }
+                }
+                else {
+
+                    statusText.innerText = "Face Not Matched";
+                    statusText.style.color = "red";
+
+                    attendanceBtn.disabled = false;
+                    attendanceBtn.innerText = "Mark Attendance";
+                }
+
+            }
+            catch (error) {
+
+                console.error(error);
+
+                statusText.innerText = "Something went wrong";
+                statusText.style.color = "red";
+
+                attendanceBtn.disabled = false;
+                attendanceBtn.innerText = "Mark Attendance";
+            }
+        }
+    }
+
+</script>
