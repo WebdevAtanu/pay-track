@@ -27,9 +27,11 @@
             </p>
 
             <div class="row">
-                <div class="col-md-6">
+                <div class="col-md-6 d-flex flex-column justify-content-center align-items-center">
+                    <div class="w-50 ">
                     <video id="video" autoplay muted></video>
-
+                    </div>
+                     
                     <div class="text-center mt-2">
                         <span id="statusText" class="status-text">
                             Loading...
@@ -37,24 +39,35 @@
                     </div>
                 </div>
                 <div class="col-md-6">
-                    <div>
-                        <p>emp details</p>
-                        <p>emp details</p>
-                        <p>emp details</p>
-                    </div>
+                    <table class="table table-bordered h-100">
+                        <tbody>
+                            <tr>
+                                <th>Employee Code</th>
+                                <td>@Model.EmpCode</td>
+                            </tr>
+                            <tr>
+                                <th>Name</th>
+                                <td>@Model.Name</td>
+                            </tr>
+                            <tr>
+                                <th>Email</th>
+                                <td>@Model.Email</td>
+                            </tr>
+                            <tr>
+                                <th>Phone</th>
+                                <td>@Model.Phone</td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
             <div class="mt-4 d-flex justify-content-end">
-
                 <button class="btn btn-primary"
                         onclick="registerFace()"
                         id="registerBtn">
-
                     Register Face
-
                 </button>
-
             </div>
 
         </div>
@@ -105,6 +118,7 @@
                 registerBtn.disabled = true;
                 registerBtn.innerText = "Processing...";
                 statusText.innerText = "Detecting face...";
+                statusText.style.color = "blue";
 
                 const detection = await faceapi
                     .detectSingleFace(
@@ -116,6 +130,7 @@
 
                 if (!detection) {
                     statusText.innerText = "No face detected";
+                    statusText.style.color = "red";
                     registerBtn.disabled = false;
                     registerBtn.innerText = "Register Face";
                     return;
@@ -136,16 +151,19 @@
                 });
 
                 if (response.ok) {
-                    alert("Face Registered Successfully");
+                    // alert("Face Registered Successfully");
                     statusText.innerText = "Face Registered Successfully";
+                    statusText.style.color = "green";
                 }
                 else {
                     statusText.innerText = "Registration Failed";
+                    statusText.style.color = "red";
                 }
             }
             catch (error) {
                 console.error(error);
                 statusText.innerText = "Something went wrong";
+                statusText.style.color = "red";
             }
             finally {
                 registerBtn.disabled = false;

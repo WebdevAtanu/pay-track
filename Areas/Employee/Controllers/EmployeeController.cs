@@ -87,6 +87,7 @@ namespace payroll_mvc.Areas.Employee.Controllers
                                              DeptId = ed != null ? ed.DeptId : (Guid?)null,
                                              DepartmentName = ed != null ? ed.DeptName : null,
                                              JoiningDate = e.JoiningDate,
+                                             FaceDescriptor = e.FaceDescriptor,
                                              IsActive = e.IsActive
                                          }).OrderBy(e => e.Name).ToListAsync();
             return View(employeeDetails);
@@ -226,11 +227,16 @@ namespace payroll_mvc.Areas.Employee.Controllers
             return RedirectToAction("Index");
         }
 
-        public IActionResult RegisterFace(Guid id)
+        public async Task<IActionResult> RegisterFace(Guid id)
         {
+            var empData = await _context.Employees.FirstOrDefaultAsync(e => e.EmployeeId == id);
             var model = new EmpFaceData
             {
-                EmployeeId = id
+                EmployeeId = id,
+                EmpCode = empData?.EmpCode ?? "",
+                Name = empData?.Name,
+                Phone = empData?.Phone,
+                Email = empData?.Email
             };
 
             return View(model);
