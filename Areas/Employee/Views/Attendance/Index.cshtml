@@ -1,4 +1,4 @@
-﻿@* @model List<AttendanceViewModel>
+﻿@model List<AttendanceViewModel>
 
 @{
     var selectedDate = Model.FirstOrDefault()?.Date?.ToString("yyyy-MM-dd")
@@ -6,26 +6,33 @@
 }
 
 <div class="container mt-2">
-    <div class="row mb-3 align-items-end">
+    <div class="row align-items-end g-3 mb-3">
 
-        <!-- Date Selector -->
-        <div class="col-md-4 mb-md-0 mb-2">
-            <label class="form-label fw-bold small">Select Date</label>
-            <input type="date" name="today" value="@selectedDate" class="form-control" />
-        </div>
+        <!-- Date + Button -->
+        <div class="col-lg-6">
+            <form asp-action="Index" method="get">
+                <div class="row g-2 align-items-end">
 
-        <!-- Button -->
-        <div class="col-md-2">
-            <button type="submit" class="btn btn-primary w-100">
-                Fetch Status
-            </button>
+                    <div class="col-md-8">
+                        <label class="form-label fw-bold small">Select Date</label>
+                        <input type="date" name="today" value="@selectedDate" class="form-control" />
+                    </div>
+
+                    <!-- Button -->
+                    <div class="col-md-4">
+                        <button type="submit" class="btn btn-primary w-100">Fetch Status</button>
+                    </div>
+
+                </div>
+            </form>
         </div>
 
         <!-- Search -->
-        <div class="col-md-4 ms-auto">
+        <div class="col-lg-6">
             <label class="form-label fw-bold small">Search</label>
-            <div class="d-flex align-items-center gap-2">
-                <input type="text" id="searchInput" class="form-control" placeholder="Search..." />
+
+            <div class="input-group">
+                <input type="text" id="searchInput" class="form-control" placeholder="Search employee..." />
                 <button type="button" onclick="clearSearch()" class="btn btn-outline-secondary">Clear</button>
             </div>
         </div>
@@ -54,8 +61,9 @@
                             <th>Employee Code</th>
                             <th>Name</th>
                             <th>Current Status</th>
-                            <th>Comment</th>
-                            <th>Update Status</th>
+                            @* <th>Comment</th>
+                            <th>Update Status</th> *@
+                            <th>Attendance</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -90,7 +98,7 @@
                                     </span>
                                 </td>
 
-                                <td>
+                                @* <td>
                                     <textarea asp-for="@Model[i].Note" rows="1" class="form-control" style="resize: none;"></textarea>
                                 </td>
 
@@ -100,17 +108,34 @@
                                         <option value="Absent">Absent</option>
                                         <option value="Leave">Leave</option>
                                     </select>
+                                </td> *@
+
+                                <td>
+                                    @if (Model[i].Status == "Present")
+                                    {
+                                        <span class="btn btn-sm btn-secondary w-100 disabled">
+                                            Attendance Marked
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <a asp-action="FaceAttendance"
+                                           asp-route-id="@Model[i].EmployeeId"
+                                           class="btn btn-sm btn-warning w-100">
+                                            Scan Face
+                                        </a>
+                                    }
                                 </td>
                             </tr>
                         }
                     </tbody>
                 </table>
             </div>
-            <div class="d-flex justify-content-end">
+            @* <div class="d-flex justify-content-end">
                 <button type="submit" class="btn btn-success px-4">
                     Save Attendance
                 </button>
-            </div>
+            </div> *@
         </form>
     }
 </div>
@@ -131,88 +156,5 @@
             }
         });
     });
-</script> *@
-
-@{
-    ViewBag.Title = "Attendance";
-}
-
-<h2>Face Attendance</h2>
-
-<video id="video" width="400" autoplay></video>
-
-<br />
-<br />
-
-<button onclick="verifyFace()">
-    Mark Attendance
-</button>
-
-<script defer src="https://cdn.jsdelivr.net/npm/face-api.js"></script>
-
-<script>
-
-    const video = document.getElementById("video");
-
-    Promise.all([
-        faceapi.nets.tinyFaceDetector.loadFromUri('~/models'),
-        faceapi.nets.faceLandmark68Net.loadFromUri('~/models'),
-        faceapi.nets.faceRecognitionNet.loadFromUri('~/models')
-    ])
-    .then(startVideo);
-
-    function startVideo() {
-
-        navigator.mediaDevices.getUserMedia({
-            video: {}
-        })
-        .then(stream => {
-            video.srcObject = stream;
-        });
-    }
-
-    async function verifyFace() {
-
-        const detection = await faceapi
-            .detectSingleFace(
-                video,
-                new faceapi.TinyFaceDetectorOptions()
-            )
-            .withFaceLandmarks()
-            .withFaceDescriptor();
-
-        if(!detection)
-        {
-            alert("No face detected");
-            return;
-        }
-
-        const currentDescriptor = detection.descriptor;
-
-        const response = await fetch(
-            '/Attendance/GetEmployeeFace?employeeId=1'
-        );
-
-        const savedDescriptor = await response.json();
-
-        const distance = faceapi.euclideanDistance(
-            currentDescriptor,
-            new Float32Array(savedDescriptor)
-        );
-
-        if(distance < 0.5)
-        {
-            alert("Attendance Marked");
-
-            // save attendance
-            await fetch('/Attendance/MarkAttendance', {
-                method: 'POST'
-            });
-        }
-        else
-        {
-            alert("Face Not Matched");
-        }
-    }
-
 </script>
+

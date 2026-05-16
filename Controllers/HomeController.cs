@@ -23,6 +23,10 @@ namespace payroll_mvc.Controllers
 
         public IActionResult Index()
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Dashboard", "Home");
+            }
             return View();
         }
 

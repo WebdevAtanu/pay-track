@@ -46,6 +46,7 @@ namespace payroll_mvc.Areas.Employee.Controllers
             return attendanceDetails;
         }
 
+        [HttpGet]
         public async Task<IActionResult> Index(DateTime? today)
         {
             var selectedDate = today ?? DateTime.Today;
@@ -85,13 +86,32 @@ namespace payroll_mvc.Areas.Employee.Controllers
 
             return RedirectToAction("Index", new { today = date });
         }
-      
-        [HttpPost("save-attendance")]
-        public IActionResult MarkAttendance()
+
+        public async Task<IActionResult> FaceAttendance(Guid id)
+        {
+            var empData = await _context.Employees.FirstOrDefaultAsync(e => e.EmployeeId == id);
+            var model = new EmpFaceData
+            {
+                EmployeeId = id,
+                EmpCode = empData?.EmpCode ?? "",
+                Name = empData?.Name,
+                Phone = empData?.Phone,
+                Email = empData?.Email,
+                Descriptor = empData?.FaceDescriptor ?? ""
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult MarkAttendance([FromBody] AttendanceRequest attendanceRequest)
         {
             Attendance attendance = new Attendance()
             {
-                EmployeeId = Guid.NewGuid(),
+                AttendanceId = Guid.NewGuid(),
+                EmployeeId = attendanceRequest.EmployeeId,
+                Date = attendanceRequest.Date,
+                Status = "Present"
             };
 
             _context.Attendances.Add(attendance);
