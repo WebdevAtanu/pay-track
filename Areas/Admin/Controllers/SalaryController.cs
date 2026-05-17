@@ -9,26 +9,40 @@ using payroll_mvc.Entities;
 namespace payroll_mvc.Areas.Admin.Controllers
 {
     [Area("Admin")]
-    public class DepartmentController : BaseController
+    public class SalaryController : BaseController
     {
         private readonly AppDBContext _context;
 
-        public DepartmentController(AppDBContext context)
+        public SalaryController(AppDBContext context)
         {
             _context = context;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(Guid employeeId)
         {
-            var deptDetails = await _context.Departments.Select(d => new DepartmentViewModel
-            {
-                DeptId = d.DeptId,
-                DeptCode = d.DeptCode,
-                DeptName = d.DeptName,
-                IsActive = d.IsActive,
-            }).ToListAsync();
+            var empDetails = await _context.Employees
+                .Where(e => e.EmployeeId == employeeId)
+                .Select(e => new { e.EmployeeId, e.Name })
+                .FirstOrDefaultAsync();
 
-            return View(deptDetails);
+            var salaryDetails = await _context.Salaries
+                .Where(s => s.EmployeeId == employeeId)
+                .Select(s => new SalaryViewModel
+                {
+                    SalaryId = s.SalaryId,
+                    EmployeeId = s.EmployeeId,
+                    EmployeeName = empDetails.Name,
+                    Month = s.Month,
+                    Year = s.Year,
+                    Basic = s.Basic,
+                    HRA = s.HRA,
+                    Bonus = s.Bonus,
+                    Deduction = s.Deduction,
+                    NetSalary = s.NetSalary,
+                    Status = s.Status
+                }).ToListAsync();
+
+            return View(salaryDetails);
         }
 
         public IActionResult Add()

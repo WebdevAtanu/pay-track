@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using payroll_mvc.Areas.Admin.ViewModels;
 using payroll_mvc.Controllers;
 using payroll_mvc.Data;
-using payroll_mvc.Models;
+using payroll_mvc.Entities;
 using payroll_mvc.ViewModels;
 
 namespace payroll_mvc.Areas.Employee.Controllers
@@ -129,7 +129,7 @@ namespace payroll_mvc.Areas.Employee.Controllers
             Guid employeeId = Guid.NewGuid();
             string empCode = GenerateEmpCode(model.Name ?? "No Name");
 
-            _context.Employees.Add(new Models.Employee
+            _context.Employees.Add(new Entities.Employee
             {
                 EmployeeId = employeeId,
                 EmpCode = empCode,

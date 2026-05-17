@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using payroll_mvc.Data;
-using payroll_mvc.Models;
+using payroll_mvc.Entities;
 using payroll_mvc.ViewModels;
 using System.Diagnostics;
 using System.Security.Claims;

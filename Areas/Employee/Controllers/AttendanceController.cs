@@ -4,7 +4,7 @@ using OpenCvSharp;
 using payroll_mvc.Areas.Admin.ViewModels;
 using payroll_mvc.Controllers;
 using payroll_mvc.Data;
-using payroll_mvc.Models;
+using payroll_mvc.Entities;
 using payroll_mvc.ViewModels;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 

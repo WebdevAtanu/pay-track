@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using payroll_mvc.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using payroll_mvc.middleware;
+using payroll_mvc.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 

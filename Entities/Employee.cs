@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace payroll_mvc.Models
+namespace payroll_mvc.Entities
 {
     [Table("Employee")]
     public class Employee

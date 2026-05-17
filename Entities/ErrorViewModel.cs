@@ -1,4 +1,4 @@
-namespace payroll_mvc.Models
+namespace payroll_mvc.Entities
 {
     public class ErrorViewModel
     {
