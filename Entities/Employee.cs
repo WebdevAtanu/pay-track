@@ -13,6 +13,7 @@ namespace payroll_mvc.Entities
         public string? Phone { get; set; }
         public string? Email { get; set; }
         public string? FaceDescriptor { get; set; }
+        public string? Password { get; set; }
         public Guid? DeptId { get; set; }
         public DateTime? JoiningDate { get; set; }
         public bool? IsActive { get; set; }

@@ -63,34 +63,51 @@ namespace payroll_mvc.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            var existingUser = _context.Admins.FirstOrDefault(u => u.Email == model.Email);
+            var admin = _context.Admins.FirstOrDefault(u => u.Email == model.Email); // Check if the user is an admin
+            var employee = admin == null ? _context.Employees.FirstOrDefault(e => e.Email == model.Email) : null; // If not an admin, check if the user is an employee
 
-            if (existingUser == null)
+            var user = (object?)admin ?? employee;
+
+            if (user == null)
             {
                 ModelState.AddModelError("", "Invalid Details Provided");
                 return View("Index", model);
             }
 
-            if (BCrypt.Net.BCrypt.Verify(model.Password, existingUser.Password))
+            string password = admin != null
+                ? admin.Password
+                : employee!.Password;
+
+            if (!BCrypt.Net.BCrypt.Verify(model.Password, password))
             {
-                var claims = new List<Claim>
-            {
-                new Claim(ClaimTypes.Email, model.Email??""),
-                new Claim(ClaimTypes.Name, existingUser.Name??"") // optional
-            };
-                var identity = new ClaimsIdentity(claims, "cookieAuth");
-                var principal = new ClaimsPrincipal(identity);
-                await HttpContext.SignInAsync("cookieAuth", principal);
-                return RedirectToAction("Dashboard", "Home");
+                ModelState.AddModelError("", "Invalid Details Provided");
+                return View("Index", model);
             }
-            ModelState.AddModelError("", "Invalid Details Provided");
-            return View("Index", model);
+
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Email, model.Email ?? ""),
+                new Claim(ClaimTypes.Name, admin?.Name ?? employee?.Name ?? ""),
+                new Claim(ClaimTypes.Role,admin != null ? "Admin" : "Employee")
+            };
+
+            var identity = new ClaimsIdentity(claims, "userAuth");
+            var principal = new ClaimsPrincipal(identity);
+
+            await HttpContext.SignInAsync("userAuth", principal);
+
+            return admin != null ? RedirectToAction("Dashboard", "Home") :
+                RedirectToAction(
+                actionName: "Index",
+                controllerName: "EmployeeDashboard",
+                routeValues: new { area = "Employee" }
+                );
         }
 
         // LOGOUT
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync("cookieAuth");
+            await HttpContext.SignOutAsync("userAuth");
             return RedirectToAction("Index");
         }
 

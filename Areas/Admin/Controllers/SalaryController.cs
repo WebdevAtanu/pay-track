@@ -47,95 +47,12 @@ namespace payroll_mvc.Areas.Admin.Controllers
 
         public IActionResult Add()
         {
-            return View(new DepartmentViewModel());
-        }
-
-        private async Task<bool> IsDeptExist(string deptName)
-        {
-            var dept = await _context.Departments.SingleOrDefaultAsync(e => e.DeptName.ToLower() == deptName);
-            if (dept == null)
-            {
-                return false;
-            }
-            return true;
-        }
-
-        private string GenerateDeptCode(string deptName)
-        {
-            // Split name into words
-            var words = deptName.Trim().Split(' ', StringSplitOptions.RemoveEmptyEntries);
-
-            string prefix;
-
-            if (words.Length >= 2)
-            {
-                // Take first letter of first 2 words
-                prefix = $"{char.ToUpper(words[0][0])}{char.ToUpper(words[1][0])}";
-            }
-            else
-            {
-                // Only one word → take first letter
-                prefix = char.ToUpper(words[0][0]).ToString();
-            }
-
-            // Fetch last ID from DB based on prefix
-            var lastId = _context.Departments
-                .Where(e => e.DeptCode.StartsWith(prefix))
-                .OrderByDescending(e => e.DeptCode)
-                .Select(e => e.DeptCode)
-                .FirstOrDefault();
-
-            int nextNumber = 1;
-
-            if (!string.IsNullOrEmpty(lastId))
-            {
-                // Extract numeric part
-                var numberPart = lastId.Substring(prefix.Length);
-                nextNumber = int.Parse(numberPart) + 1;
-            }
-
-            // Padding logic
-            string formattedNumber;
-
-            if (prefix.Length == 2)
-            {
-                formattedNumber = nextNumber.ToString("D2");
-            }
-            else
-            {
-                formattedNumber = nextNumber.ToString("D3");
-            }
-
-            return $"{prefix}{formattedNumber}";
+            return View(new Salary()); // Return empty model for form binding
         }
 
         [HttpPost]
         public async Task<IActionResult> Add(DepartmentViewModel model)
         {
-            //if (!ModelState.IsValid)
-            //    return View(model);
-
-            bool deptExist = await IsDeptExist(model.DeptName.ToLower());
-            if (deptExist)
-            {
-                TempData["ErrorMessage"] = "Department already exists";
-                return RedirectToAction("Add");
-            }
-
-            Guid deptId = Guid.NewGuid();
-            string deptCode = GenerateDeptCode(model.DeptName ?? "No Name");
-
-            _context.Departments.Add(new Department
-            {
-                DeptId = model.DeptId,
-                DeptCode = deptCode,
-                DeptName = model.DeptName,
-                CreatedAt = DateTime.Now,
-                IsActive = true
-            });
-
-            await _context.SaveChangesAsync();
-
             return RedirectToAction("Index");
         }
 

@@ -48,10 +48,12 @@
             <!-- Sidebar Body -->
             <div class="offcanvas-body p-2">
                 <div class="w-full">
-                    <ul class="nav flex-column w-full">
+                    @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                    {
+                        <ul class="nav flex-column w-full">
 
-                        @await Html.PartialAsync("_Menu",new MenuViewModel {
-                        Area = "",
+                            @await Html.PartialAsync("_Menu",new MenuViewModel {
+                            Area = "",
                                                 Controller = "Home",
                                                 Action = "Dashboard",
                                                 IconClass = "bi bi-clipboard-data-fill",
@@ -94,6 +96,21 @@
                                                 MenuName = "Department"
                                                 })
                     </ul>
+                                        }
+
+                    @if (User.Identity.IsAuthenticated && User.IsInRole("Employee"))
+                    {
+                        <ul class="nav flex-column w-full">
+
+                            @await Html.PartialAsync("_Menu",new MenuViewModel {
+                            Area = "Employee",
+                                                Controller = "Attendance",
+                                                Action = "Index",
+                                                IconClass = "bi bi-card-checklist",
+                                                MenuName = "Attendance"
+                                                })
+                    </ul>
+                                        }
                 </div>
             </div>
         </div>
