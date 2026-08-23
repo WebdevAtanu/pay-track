@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using payroll_mvc.Data;
 using payroll_mvc.Entities;
 using payroll_mvc.ViewModels;
@@ -63,24 +64,53 @@ namespace payroll_mvc.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginViewModel model)
         {
-            var admin = _context.Admins.FirstOrDefault(u => u.Email == model.Email); // Check if the user is an admin
-            var employee = admin == null ? _context.Employees.FirstOrDefault(e => e.Email == model.Email) : null; // If not an admin, check if the user is an employee
-
-            var user = (object?)admin ?? employee;
-
-            if (user == null)
+            // Validate login type selection
+            if (string.IsNullOrEmpty(model.LoginType))
             {
-                ModelState.AddModelError("", "Invalid Details Provided");
+                ModelState.AddModelError("", "Please select login type");
                 return View("Index", model);
             }
 
-            string password = admin != null
-                ? admin.Password
-                : employee!.Password;
+            Admin? admin = null;
+            Employee? employee = null;
 
-            if (!BCrypt.Net.BCrypt.Verify(model.Password, password))
+            // Check user based on login type
+            if (model.LoginType == "Admin")
             {
-                ModelState.AddModelError("", "Invalid Details Provided");
+                admin = _context.Admins.FirstOrDefault(u => u.Email == model.Email);
+                if (admin == null)
+                {
+                    ModelState.AddModelError("", "Invalid admin credentials");
+                    return View("Index", model);
+                }
+
+                if (!BCrypt.Net.BCrypt.Verify(model.Password, admin.Password))
+                {
+                    ModelState.AddModelError("", "Invalid admin credentials");
+                    return View("Index", model);
+                }
+            }
+            else if (model.LoginType == "Employee")
+            {
+                employee = _context.Employees.FirstOrDefault(e => e.Email == model.Email);
+                if (employee == null)
+                {
+                    ModelState.AddModelError("", "Invalid employee credentials");
+                    return View("Index", model);
+                }
+
+                if (!BCrypt.Net.BCrypt.Verify(model.Password, employee.Password))
+                {
+                    ModelState.AddModelError("", "Invalid employee credentials");
+                    return View("Index", model);
+                }
+
+                // Auto-mark attendance for employee on login
+                await MarkEmployeeAttendance(employee.EmployeeId);
+            }
+            else
+            {
+                ModelState.AddModelError("", "Invalid login type selected");
                 return View("Index", model);
             }
 
@@ -88,20 +118,52 @@ namespace payroll_mvc.Controllers
             {
                 new Claim(ClaimTypes.Email, model.Email ?? ""),
                 new Claim(ClaimTypes.Name, admin?.Name ?? employee?.Name ?? ""),
-                new Claim(ClaimTypes.Role,admin != null ? "Admin" : "Employee")
+                new Claim(ClaimTypes.Role, model.LoginType)
             };
+
+            if (employee != null)
+            {
+                claims.Add(new Claim("EmployeeId", employee.EmployeeId.ToString()));
+            }
 
             var identity = new ClaimsIdentity(claims, "userAuth");
             var principal = new ClaimsPrincipal(identity);
 
             await HttpContext.SignInAsync("userAuth", principal);
 
-            return admin != null ? RedirectToAction("Dashboard", "Home") :
+            return model.LoginType == "Admin" ? RedirectToAction("Dashboard", "Home") :
                 RedirectToAction(
                 actionName: "Index",
                 controllerName: "EmployeeDashboard",
                 routeValues: new { area = "Employee" }
                 );
+        }
+
+        private async Task MarkEmployeeAttendance(Guid employeeId)
+        {
+            var today = DateTime.Today;
+
+            // Check if attendance already exists for today
+            var existingAttendance = await _context.Attendances
+                .FirstOrDefaultAsync(a => a.EmployeeId == employeeId &&
+                                        a.Date.HasValue &&
+                                        a.Date.Value.Date == today);
+
+            if (existingAttendance == null)
+            {
+                // Create new attendance record
+                var attendance = new Attendance
+                {
+                    AttendanceId = Guid.NewGuid(),
+                    EmployeeId = employeeId,
+                    Date = today,
+                    Status = "Present",
+                    Note = "Auto-marked on login"
+                };
+
+                _context.Attendances.Add(attendance);
+                await _context.SaveChangesAsync();
+            }
         }
 
         // LOGOUT
