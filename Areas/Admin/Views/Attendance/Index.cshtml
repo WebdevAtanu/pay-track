@@ -1,4 +1,4 @@
-﻿@model List<AttendanceViewModel>
+@model List<AttendanceViewModel>
 
 @{
     var startDate = Context.Request.Query["startDate"].ToString();
@@ -12,34 +12,43 @@
     {
         endDate = DateTime.Today.ToString("yyyy-MM-dd");
     }
-    var employee = Model.FirstOrDefault();
 }
 
 <div class="container mt-2">
     <div class="row align-items-end g-3 mb-3">
 
         <!-- Date Range + Button -->
-        <div class="col-lg-12">
+        <div class="col-lg-6">
             <form asp-action="Index" method="get">
                 <div class="row g-2 align-items-end">
 
-                    <div class="col-md-5">
+                    <div class="col-md-4">
                         <label class="form-label fw-bold small">Start Date</label>
                         <input type="date" name="startDate" value="@startDate" class="form-control" />
                     </div>
 
-                    <div class="col-md-5">
+                    <div class="col-md-4">
                         <label class="form-label fw-bold small">End Date</label>
                         <input type="date" name="endDate" value="@endDate" class="form-control" />
                     </div>
 
                     <!-- Button -->
-                    <div class="col-md-2">
+                    <div class="col-md-4">
                         <button type="submit" class="btn btn-primary w-100">Fetch Status</button>
                     </div>
 
                 </div>
             </form>
+        </div>
+
+        <!-- Search -->
+        <div class="col-lg-6">
+            <label class="form-label fw-bold small">Search</label>
+
+            <div class="input-group">
+                <input type="text" id="searchInput" class="form-control" placeholder="Search employee..." />
+                <button type="button" onclick="clearSearch()" class="btn btn-outline-secondary">Clear</button>
+            </div>
         </div>
 
     </div>
@@ -61,6 +70,8 @@
                         <th>Employee Code</th>
                         <th>Name</th>
                         <th>Status</th>
+                        <th>Comment</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -86,6 +97,25 @@
                                     @status
                                 </span>
                             </td>
+                            <td>@Model[i]?.Note</td>
+                            <td>
+                                @if (Model[i]?.Status != "Present")
+                                {
+                                    <a asp-area="Admin" asp-action="FaceAttendance"
+                                       asp-controller="Attendance"
+                                       asp-route-id="@Model[i].EmployeeId"
+                                       asp-route-date="@Model[i]?.Date?.ToString("yyyy-MM-dd")"
+                                       class="btn btn-sm btn-warning w-100">
+                                        Scan Face
+                                    </a>
+                                }
+                                else
+                                {
+                                    <span class="btn btn-sm btn-secondary w-100 disabled">
+                                        Marked
+                                    </span>
+                                }
+                            </td>
                         </tr>
                     }
                 </tbody>
@@ -94,3 +124,28 @@
     }
 </div>
 
+<script>
+    document.getElementById("searchInput").addEventListener("keyup", function () {
+        let filter = this.value.toLowerCase();
+        let rows = document.querySelectorAll("#attendanceTable tbody tr");
+
+        rows.forEach(row => {
+            let empCode = row.cells[1].innerText.toLowerCase();
+            let name = row.cells[2].innerText.toLowerCase();
+
+            if (empCode.includes(filter) || name.includes(filter)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    });
+
+    function clearSearch() {
+        document.getElementById("searchInput").value = "";
+        let rows = document.querySelectorAll("#attendanceTable tbody tr");
+        rows.forEach(row => {
+            row.style.display = "";
+        });
+    }
+</script>

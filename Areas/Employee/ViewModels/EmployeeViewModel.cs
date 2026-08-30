@@ -27,5 +27,6 @@ namespace payroll_mvc.Areas.Admin.ViewModels
         public string? Phone { get; set; }
         public string? Email { get; set; }
         public DateTime? Date { get; set; }
+        public DateTime SelectedDate { get; set; } = DateTime.Today;
     }
 }

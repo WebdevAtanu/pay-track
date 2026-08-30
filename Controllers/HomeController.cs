@@ -134,8 +134,8 @@ namespace payroll_mvc.Controllers
             return model.LoginType == "Admin" ? RedirectToAction("Dashboard", "Home") :
                 RedirectToAction(
                 actionName: "Index",
-                controllerName: "EmployeeDashboard",
-                routeValues: new { area = "Employee" }
+                controllerName: "Attendance",
+                routeValues: new { area = "Employee", startDate = DateTime.Today.ToString("yyyy-MM-dd"), endDate = DateTime.Today.ToString("yyyy-MM-dd") }
                 );
         }
 
