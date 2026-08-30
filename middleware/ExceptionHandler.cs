@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 
-namespace payroll_mvc.middleware
+namespace payroll_mvc.Middleware
 {
     public class ExceptionHandler : IExceptionFilter
     {

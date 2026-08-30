@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using payroll_mvc.Models;
+using payroll_mvc.Entities;
 
 namespace payroll_mvc.Data
 {

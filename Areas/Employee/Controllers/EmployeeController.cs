@@ -3,8 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using payroll_mvc.Areas.Admin.ViewModels;
 using payroll_mvc.Controllers;
 using payroll_mvc.Data;
-using payroll_mvc.Models;
+using payroll_mvc.Entities;
 using payroll_mvc.ViewModels;
+using BCrypt.Net;
 
 namespace payroll_mvc.Areas.Employee.Controllers
 {
@@ -129,7 +130,9 @@ namespace payroll_mvc.Areas.Employee.Controllers
             Guid employeeId = Guid.NewGuid();
             string empCode = GenerateEmpCode(model.Name ?? "No Name");
 
-            _context.Employees.Add(new Models.Employee
+            string passwordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
+
+            _context.Employees.Add(new Entities.Employee
             {
                 EmployeeId = employeeId,
                 EmpCode = empCode,
@@ -138,6 +141,7 @@ namespace payroll_mvc.Areas.Employee.Controllers
                 Email = model.Email,
                 DeptId = model.DeptId,
                 JoiningDate = model.JoiningDate,
+                Password = passwordHash,
                 IsActive = true
             });
 
@@ -183,10 +187,13 @@ namespace payroll_mvc.Areas.Employee.Controllers
             if (employee == null)
                 return NotFound();
 
+            string passwordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
+
             // Update employee
             employee.Name = model.Name;
             employee.Phone = model.Phone;
             employee.Email = model.Email;
+            employee.Password = passwordHash;
             employee.DeptId = model.DeptId;
             employee.IsActive = model.IsActive;
 

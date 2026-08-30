@@ -64,6 +64,15 @@
                 <span asp-validation-for="JoiningDate" class="text-danger"></span>
             </div>
         </div>
+
+        <!-- Password -->
+        <div class="col-md-6 mb-3">
+            <div class="input-group">
+                <span class="input-group-text" id="password">Password</span>
+                <input type="text" class="form-control" placeholder="Enter Password" aria-label="password" aria-describedby="password" asp-for="Password">
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+        </div>
     </div>
 
     <!-- Buttons -->

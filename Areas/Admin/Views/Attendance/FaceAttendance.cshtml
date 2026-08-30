@@ -1,4 +1,4 @@
-﻿@model EmpFaceData
+@model EmpFaceData
 
 @{
     ViewBag.Title = "Attendance";
@@ -74,7 +74,7 @@
 
             <div class="mt-4 d-flex justify-content-end gap-2">
 
-                <a asp-area="Employee" asp-controller="Attendance" asp-action="Index"
+                <a asp-area="Admin" asp-controller="Attendance" asp-action="Index"
                    asp-route-startDate="@Model.SelectedDate.ToString("yyyy-MM-dd")"
                    asp-route-endDate="@Model.SelectedDate.ToString("yyyy-MM-dd")"
                    class="btn btn-secondary">
@@ -188,7 +188,7 @@
                 if (distance < 0.5) {
 
                            const attendanceResponse = await fetch(
-                            '/Employee/Attendance/MarkAttendance',
+                            '/Admin/Attendance/MarkAttendance',
                             {
                                 method: 'POST',
                                 headers: {

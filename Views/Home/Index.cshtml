@@ -26,6 +26,15 @@
             <!-- Login Form -->
             <form id="loginForm" class="form-box active p-2" method="post" asp-action="Login">
                 <div class="mb-2 text-start">
+                    <label>Login Type</label>
+                    <select name="LoginType" class="form-control" required>
+                        <option value="">Select login type</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Employee">Employee</option>
+                    </select>
+                </div>
+
+                <div class="mb-2 text-start">
                     <label>Email</label>
                     <input type="email" name="Email" class="form-control" placeholder="Enter email" required />
                 </div>

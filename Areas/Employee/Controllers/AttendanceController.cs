@@ -4,8 +4,9 @@ using OpenCvSharp;
 using payroll_mvc.Areas.Admin.ViewModels;
 using payroll_mvc.Controllers;
 using payroll_mvc.Data;
-using payroll_mvc.Models;
+using payroll_mvc.Entities;
 using payroll_mvc.ViewModels;
+using System.Security.Claims;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace payroll_mvc.Areas.Employee.Controllers
@@ -20,76 +21,82 @@ namespace payroll_mvc.Areas.Employee.Controllers
             _context = context;
         }
 
-        private async Task<List<AttendanceViewModel>> GetEmployeeAttendance(DateTime date)
+        private Guid? GetCurrentEmployeeId()
         {
-            var attendanceDetails = await (
-                from e in _context.Employees
-                where e.IsActive == true
+            var employeeIdClaim = User.FindFirst("EmployeeId")?.Value;
+            if (string.IsNullOrEmpty(employeeIdClaim) || !Guid.TryParse(employeeIdClaim, out var employeeId))
+            {
+                return null;
+            }
+            return employeeId;
+        }
 
-                from eat in _context.Attendances
-                    .Where(a => a.EmployeeId == e.EmployeeId &&
-                                a.Date >= date.Date &&
-                                a.Date < date.Date.AddDays(1))
-                    .DefaultIfEmpty()
+        private async Task<List<AttendanceViewModel>> GetEmployeeAttendance(DateTime startDate, DateTime endDate)
+        {
+            var currentEmployeeId = GetCurrentEmployeeId();
+            if (currentEmployeeId == null)
+            {
+                return new List<AttendanceViewModel>();
+            }
 
-                select new AttendanceViewModel
+            var employee = await _context.Employees
+                .FirstOrDefaultAsync(e => e.EmployeeId == currentEmployeeId);
+
+            if (employee == null)
+            {
+                return new List<AttendanceViewModel>();
+            }
+
+            var attendances = await _context.Attendances
+                .Where(a => a.EmployeeId == currentEmployeeId &&
+                           a.Date.HasValue &&
+                           a.Date.Value >= startDate.Date &&
+                           a.Date.Value <= endDate.Date.AddDays(1).AddTicks(-1))
+                .ToListAsync();
+
+            var attendanceDetails = new List<AttendanceViewModel>();
+
+            for (var date = startDate.Date; date <= endDate.Date; date = date.AddDays(1))
+            {
+                var attendance = attendances.FirstOrDefault(a =>
+                    a.Date.HasValue &&
+                    a.Date.Value.Date == date);
+
+                attendanceDetails.Add(new AttendanceViewModel
                 {
-                    EmployeeId = e.EmployeeId,
-                    EmpCode = e.EmpCode,
-                    Name = e.Name,
-                    Date = eat != null ? eat.Date : date,
-                    Status = eat != null ? eat.Status : "Absent",
-                    Note = eat != null ? eat.Note : ""
-                }
-            ).ToListAsync();
+                    EmployeeId = employee.EmployeeId,
+                    EmpCode = employee.EmpCode,
+                    Name = employee.Name,
+                    Date = date,
+                    Status = attendance != null ? attendance.Status : "Absent",
+                    Note = attendance != null ? attendance.Note : ""
+                });
+            }
 
             return attendanceDetails;
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index(DateTime? today)
+        public async Task<IActionResult> Index(DateTime? startDate, DateTime? endDate)
         {
-            var selectedDate = today ?? DateTime.Today;
-            var attendanceDetails = await GetEmployeeAttendance(selectedDate);
+            var selectedStartDate = startDate ?? DateTime.Today;
+            var selectedEndDate = endDate ?? DateTime.Today;
+
+            var attendanceDetails = await GetEmployeeAttendance(selectedStartDate, selectedEndDate);
             return View(attendanceDetails);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> SaveAttendance(List<AttendanceViewModel> model, DateTime date)
+        public async Task<IActionResult> FaceAttendance(Guid id, DateTime? date)
         {
-            foreach (var item in model)
+            var currentEmployeeId = GetCurrentEmployeeId();
+            if (currentEmployeeId == null || id != currentEmployeeId)
             {
-                var existing = await _context.Attendances
-                    .FirstOrDefaultAsync(x =>
-                        x.EmployeeId == item.EmployeeId &&
-                        x.Date >= date.Date &&
-                        x.Date < date.Date.AddDays(1));
-
-                if (existing != null)
-                {
-                    existing.Status = item.Status;
-                    existing.Note = item.Note;
-                }
-                else
-                {
-                    _context.Attendances.Add(new Attendance
-                    {
-                        EmployeeId = item.EmployeeId,
-                        Date = date,
-                        Status = item.Status,
-                        Note = item.Note
-                    });
-                }
+                return Forbid();
             }
 
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("Index", new { today = date });
-        }
-
-        public async Task<IActionResult> FaceAttendance(Guid id)
-        {
             var empData = await _context.Employees.FirstOrDefaultAsync(e => e.EmployeeId == id);
+            var selectedDate = date ?? DateTime.Today;
+
             var model = new EmpFaceData
             {
                 EmployeeId = id,
@@ -97,7 +104,8 @@ namespace payroll_mvc.Areas.Employee.Controllers
                 Name = empData?.Name,
                 Phone = empData?.Phone,
                 Email = empData?.Email,
-                Descriptor = empData?.FaceDescriptor ?? ""
+                Descriptor = empData?.FaceDescriptor ?? "",
+                SelectedDate = selectedDate
             };
 
             return View(model);
@@ -106,6 +114,12 @@ namespace payroll_mvc.Areas.Employee.Controllers
         [HttpPost]
         public IActionResult MarkAttendance([FromBody] AttendanceRequest attendanceRequest)
         {
+            var currentEmployeeId = GetCurrentEmployeeId();
+            if (currentEmployeeId == null || attendanceRequest.EmployeeId != currentEmployeeId)
+            {
+                return Forbid();
+            }
+
             Attendance attendance = new Attendance()
             {
                 AttendanceId = Guid.NewGuid(),

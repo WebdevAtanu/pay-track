@@ -1,4 +1,4 @@
-﻿using payroll_mvc.Models;
+﻿using payroll_mvc.Entities;
 
 namespace payroll_mvc.Areas.Admin.ViewModels
 {
@@ -13,6 +13,7 @@ namespace payroll_mvc.Areas.Admin.ViewModels
         public string? DepartmentName { get; set; }
         public DateTime? JoiningDate { get; set; }
         public string? FaceDescriptor { get; set; }
+        public string? Password { get; set; }
         public bool? IsActive { get; set; }
         public List<Department>? Departments { get; set; }
     }
@@ -26,5 +27,6 @@ namespace payroll_mvc.Areas.Admin.ViewModels
         public string? Phone { get; set; }
         public string? Email { get; set; }
         public DateTime? Date { get; set; }
+        public DateTime SelectedDate { get; set; } = DateTime.Today;
     }
 }

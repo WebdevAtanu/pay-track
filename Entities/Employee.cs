@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace payroll_mvc.Models
+namespace payroll_mvc.Entities
 {
     [Table("Employee")]
     public class Employee
@@ -13,6 +13,7 @@ namespace payroll_mvc.Models
         public string? Phone { get; set; }
         public string? Email { get; set; }
         public string? FaceDescriptor { get; set; }
+        public string? Password { get; set; }
         public Guid? DeptId { get; set; }
         public DateTime? JoiningDate { get; set; }
         public bool? IsActive { get; set; }
