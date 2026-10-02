@@ -5,6 +5,7 @@ namespace payroll_mvc.Areas.Admin.ViewModels
     public class DetailedEmployeeViewModel
     {
         public Guid EmployeeId { get; set; }
+        public string? EmpCode { get; set; }
         public string? Name { get; set; }
         public string? Phone { get; set; }
         public string? Email { get; set; }

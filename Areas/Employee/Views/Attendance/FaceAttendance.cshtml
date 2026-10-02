@@ -214,12 +214,31 @@
                         attendanceBtn.classList.remove("btn-primary");
                         attendanceBtn.classList.add("btn-success");
                     }
+                    else if (attendanceResponse.status === 400) {
+                        attendanceResponse.text().then(text => {
+                            if (text.includes("previous dates")) {
+                                statusText.innerText = "Cannot mark attendance for previous dates";
+                            } else if (text.includes("future dates")) {
+                                statusText.innerText = "Cannot mark attendance for future dates";
+                            } else {
+                                statusText.innerText = "Attendance already marked for this date";
+                            }
+                        });
+
+                        statusText.style.color = "orange";
+
+                        attendanceBtn.disabled = false;
+                        attendanceBtn.innerText = "Mark Attendance";
+                    }
                     else {
 
                         statusText.innerText =
                             "Failed to mark attendance";
 
                         statusText.style.color = "red";
+
+                        attendanceBtn.disabled = false;
+                        attendanceBtn.innerText = "Mark Attendance";
                     }
                 }
                 else {

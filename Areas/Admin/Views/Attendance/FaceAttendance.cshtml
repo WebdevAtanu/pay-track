@@ -214,12 +214,25 @@
                         attendanceBtn.classList.remove("btn-primary");
                         attendanceBtn.classList.add("btn-success");
                     }
+                    else if (attendanceResponse.status === 400) {
+                        attendanceResponse.text().then(text => {
+                            statusText.innerText = text;
+                        });
+
+                        statusText.style.color = "orange";
+
+                        attendanceBtn.disabled = false;
+                        attendanceBtn.innerText = "Mark Attendance";
+                    }
                     else {
 
                         statusText.innerText =
                             "Failed to mark attendance";
 
                         statusText.style.color = "red";
+
+                        attendanceBtn.disabled = false;
+                        attendanceBtn.innerText = "Mark Attendance";
                     }
                 }
                 else {

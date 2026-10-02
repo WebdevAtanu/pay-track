@@ -25,12 +25,12 @@
 
                     <div class="col-md-5">
                         <label class="form-label fw-bold small">Start Date</label>
-                        <input type="date" name="startDate" value="@startDate" class="form-control" />
+                        <input type="date" name="startDate" value="@startDate" class="form-control" max="@DateTime.Today.ToString("yyyy-MM-dd")" />
                     </div>
 
                     <div class="col-md-5">
                         <label class="form-label fw-bold small">End Date</label>
-                        <input type="date" name="endDate" value="@endDate" class="form-control" />
+                        <input type="date" name="endDate" value="@endDate" class="form-control" max="@DateTime.Today.ToString("yyyy-MM-dd")" />
                     </div>
 
                     <!-- Button -->
@@ -61,6 +61,7 @@
                         <th>Employee Code</th>
                         <th>Name</th>
                         <th>Status</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -85,6 +86,30 @@
                                 <span class="badge @badgeClass">
                                     @status
                                 </span>
+                            </td>
+                            <td>
+                                @if (Model[i]?.Status == "Present")
+                                {
+                                    <span class="btn btn-sm btn-secondary w-100 disabled">
+                                        Marked
+                                    </span>
+                                }
+                                else if (Model[i]?.Date?.Date < DateTime.Today)
+                                {
+                                    <span class="btn btn-sm btn-secondary w-100 disabled">
+                                        N/A
+                                    </span>
+                                }
+                                else
+                                {
+                                    <a asp-area="Employee" asp-action="FaceAttendance"
+                                       asp-controller="Attendance"
+                                       asp-route-id="@Model[i].EmployeeId"
+                                       asp-route-date="@Model[i]?.Date?.ToString("yyyy-MM-dd")"
+                                       class="btn btn-sm btn-warning w-100">
+                                        Scan Face
+                                    </a>
+                                }
                             </td>
                         </tr>
                     }

@@ -46,6 +46,7 @@ namespace payroll_mvc.Areas.Admin.Controllers
                 .Select(g => new DetailedEmployeeViewModel
                 {
                     EmployeeId = g.Key,
+                    EmpCode = g.First().e.EmpCode,
                     Name = g.First().e.Name,
                     Phone = g.First().e.Phone,
                     Email = g.First().e.Email,
