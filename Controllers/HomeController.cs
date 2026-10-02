@@ -104,9 +104,6 @@ namespace payroll_mvc.Controllers
                     ModelState.AddModelError("", "Invalid employee credentials");
                     return View("Index", model);
                 }
-
-                // Auto-mark attendance for employee on login
-                await MarkEmployeeAttendance(employee.EmployeeId);
             }
             else
             {
@@ -137,33 +134,6 @@ namespace payroll_mvc.Controllers
                 controllerName: "Attendance",
                 routeValues: new { area = "Employee", startDate = DateTime.Today.ToString("yyyy-MM-dd"), endDate = DateTime.Today.ToString("yyyy-MM-dd") }
                 );
-        }
-
-        private async Task MarkEmployeeAttendance(Guid employeeId)
-        {
-            var today = DateTime.Today;
-
-            // Check if attendance already exists for today
-            var existingAttendance = await _context.Attendances
-                .FirstOrDefaultAsync(a => a.EmployeeId == employeeId &&
-                                        a.Date.HasValue &&
-                                        a.Date.Value.Date == today);
-
-            if (existingAttendance == null)
-            {
-                // Create new attendance record
-                var attendance = new Attendance
-                {
-                    AttendanceId = Guid.NewGuid(),
-                    EmployeeId = employeeId,
-                    Date = today,
-                    Status = "Present",
-                    Note = "Auto-marked on login"
-                };
-
-                _context.Attendances.Add(attendance);
-                await _context.SaveChangesAsync();
-            }
         }
 
         // LOGOUT

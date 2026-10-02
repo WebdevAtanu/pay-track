@@ -120,6 +120,29 @@ namespace payroll_mvc.Areas.Employee.Controllers
                 return Forbid();
             }
 
+            // Prevent marking attendance for previous dates
+            if (attendanceRequest.Date.Date < DateTime.Today)
+            {
+                return BadRequest("Cannot mark attendance for previous dates");
+            }
+
+            // Prevent marking attendance for future dates
+            if (attendanceRequest.Date.Date > DateTime.Today)
+            {
+                return BadRequest("Cannot mark attendance for future dates");
+            }
+
+            // Check if attendance already exists for this date
+            var existingAttendance = _context.Attendances
+                .FirstOrDefault(a => a.EmployeeId == attendanceRequest.EmployeeId &&
+                                   a.Date.HasValue &&
+                                   a.Date.Value.Date == attendanceRequest.Date.Date);
+
+            if (existingAttendance != null)
+            {
+                return BadRequest("Attendance already marked for this date");
+            }
+
             Attendance attendance = new Attendance()
             {
                 AttendanceId = Guid.NewGuid(),

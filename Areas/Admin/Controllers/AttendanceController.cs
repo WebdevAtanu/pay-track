@@ -86,6 +86,17 @@ namespace payroll_mvc.Areas.Admin.Controllers
         [HttpPost]
         public IActionResult MarkAttendance([FromBody] AttendanceRequest attendanceRequest)
         {
+            // Check if attendance already exists for this date
+            var existingAttendance = _context.Attendances
+                .FirstOrDefault(a => a.EmployeeId == attendanceRequest.EmployeeId &&
+                                   a.Date.HasValue &&
+                                   a.Date.Value.Date == attendanceRequest.Date.Date);
+
+            if (existingAttendance != null)
+            {
+                return BadRequest("Attendance already marked for this date");
+            }
+
             Attendance attendance = new Attendance()
             {
                 AttendanceId = Guid.NewGuid(),

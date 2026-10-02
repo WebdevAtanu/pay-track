@@ -1,32 +1,100 @@
 ﻿@model List<DetailedEmployeeViewModel>
 
-<div class="d-flex justify-content-between mb-2">
-    <h4>Employee Details</h4>
-    <a asp-area="Admin" asp-controller="Attendance" asp-action="Index" class="btn border btn btn-info px-4 py-2 text-decoration-none">Attendance</a>
+<div class="container-fluid">
+    <div class="row mb-2">
+        <div class="col-md-8">
+            <h3 class="mb-0">
+                <i class="bi bi-people-fill me-2"></i>Employee Management
+            </h3>
+            <p class="text-muted">Manage and view employee details, attendance, and salary information</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a asp-area="Admin" asp-controller="Attendance" asp-action="Index" class="btn btn-outline-primary me-2">
+                <i class="bi bi-calendar-check me-1"></i> Attendance
+            </a>
+            <a asp-area="Employee" asp-controller="Employee" asp-action="Add" class="btn btn-primary">
+                <i class="bi bi-person-plus me-1"></i> Add Employee
+            </a>
+        </div>
+    </div>
+
+    <!-- Employee Table -->
+    <div class="data-table">
+        <table id="employeeTable" class="display table table-hover">
+            <thead class="table-light">
+                <tr>
+                    <th></th>
+                    <th>Employee</th>
+                    <th>Contact</th>
+                    <th>Department</th>
+                    <th>Status</th>
+                    <th>Joining Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var emp in Model)
+                {
+                    <tr>
+                        <td class="details-control" data-json='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(emp))'>
+                            
+                        </td>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="avatar-circle bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                                    @(emp.Name?.Substring(0, 1).ToUpper() ?? "E")
+                                </div>
+                                <div>
+                                    <strong>@emp.Name</strong>
+                                    <small class="d-block text-muted">@emp.EmpCode</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <div>@emp.Email</div>
+                            <small class="text-muted">@emp.Phone</small>
+                        </td>
+                        <td>
+                            @(emp.EmployeeDepartment?.DeptName ?? "No Department")
+                        </td>
+                        <td>
+                            @if (emp.IsActive == true)
+                            {
+                                <span class="badge bg-success">Active</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">Inactive</span>
+                            }
+                        </td>
+                        <td>@emp.JoiningDate?.ToString("yyyy-MM-dd")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
 </div>
 
-<div class="data-table">
-    <table id="employeeTable" class="display">
-        <thead>
-            <tr>
-                <th></th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Phone</th>
-                <th>Joining Date</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var emp in Model)
-            {
-                <tr>
-                    <td class="details-control" data-json='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(emp))'></td>
-                    <td>@emp.Name</td>
-                    <td>@emp.Email</td>
-                    <td>@emp.Phone</td>
-                    <td>@emp.JoiningDate?.ToString("yyyy-MM-dd")</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-</div>
+<style>
+    .avatar-circle {
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+
+    .details-control {
+        cursor: pointer;
+        text-align: center;
+    }
+
+    .details-control:hover i {
+        transform: scale(1.2);
+        transition: transform 0.2s;
+    }
+
+    .data-table tbody tr.shown td.details-control i {
+        transform: rotate(90deg);
+    }
+
+    .employee-details {
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+</style>
