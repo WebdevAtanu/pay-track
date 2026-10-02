@@ -1,24 +1,4 @@
-﻿function toggleForm() {
-    const loginForm = document.getElementById("loginForm");
-    const signupForm = document.getElementById("signupForm");
-    const formTitle = document.getElementById("formTitle");
-    const toggleText = document.getElementById("toggleText");
-
-    loginForm.classList.toggle("active");
-    signupForm.classList.toggle("active");
-
-    if (loginForm.classList.contains("active")) {
-        formTitle.innerText = "Login";
-        toggleText.innerHTML = `Don't have an account?
-            <span class="toggle-link" onclick="toggleForm()">Sign Up</span>`;
-    } else {
-        formTitle.innerText = "Sign Up";
-        toggleText.innerHTML = `Already have an account?
-            <span class="toggle-link" onclick="toggleForm()">Login</span>`;
-    }
-}
-
-//==================================== data table =====================================
+﻿//==================================== data table =====================================
 function format(data) {
     // Calculate attendance statistics
     const totalAttendance = data.EmployeeAttendances.length;
@@ -99,9 +79,6 @@ function format(data) {
                         <a href="/Employee/Employee/Edit/${data.EmployeeId}" class="btn btn-sm btn-outline-primary">
                             <i class="bi bi-pencil"></i> Edit
                         </a>
-                        <a href="/Employee/Employee/ActiveToggle/${data.EmployeeId}" class="btn btn-sm btn-outline-warning">
-                            <i class="bi bi-toggle-on"></i> Toggle
-                        </a>
                     </div>
                 </div>
             </div>
@@ -109,14 +86,14 @@ function format(data) {
             <!-- Contact Information -->
             <div class="row mb-4">
                 <div class="col-md-6">
-                    <h6 class="mb-3">
+                    <h6 class="mb-2">
                         <i class="bi bi-telephone me-2"></i>Contact Information
                     </h6>
                     <p class="mb-1"><strong>Email:</strong> ${data.Email || 'N/A'}</p>
                     <p class="mb-0"><strong>Phone:</strong> ${data.Phone || 'N/A'}</p>
                 </div>
                 <div class="col-md-6">
-                    <h6 class="mb-3">
+                    <h6 class="mb-2">
                         <i class="bi bi-calendar-check me-2"></i>Employment Details
                     </h6>
                     <p class="mb-0"><strong>Joining Date:</strong> ${data.JoiningDate ? data.JoiningDate.split('T')[0] : 'N/A'}</p>
@@ -126,30 +103,30 @@ function format(data) {
             <!-- Statistics -->
             <div class="row mb-4">
                 <div class="col-md-3">
-                    <div class="text-center">
+                    <div class="text-center border">
                         <h6 class="text-muted mb-2">Attendance Rate</h6>
-                        <h3 class="text-primary mb-0">${attendanceRate}%</h3>
+                        <h4 class="text-primary mb-0">${attendanceRate}%</h4>
                         <small class="text-muted">${presentCount}/${totalAttendance} days</small>
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="text-center">
+                    <div class="text-center border">
                         <h6 class="text-muted mb-2">Present</h6>
-                        <h3 class="text-success mb-0">${presentCount}</h3>
+                        <h4 class="text-success mb-0">${presentCount}</h4>
                         <small class="text-muted">Days</small>
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="text-center">
+                    <div class="text-center border">
                         <h6 class="text-muted mb-2">Absent</h6>
-                        <h3 class="text-danger mb-0">${absentCount}</h3>
+                        <h4 class="text-danger mb-0">${absentCount}</h4>
                         <small class="text-muted">Days</small>
                     </div>
                 </div>
                 <div class="col-md-3">
-                    <div class="text-center">
+                    <div class="text-center border">
                         <h6 class="text-muted mb-2">Total Salary</h6>
-                        <h3 class="text-info mb-0">$${totalSalary.toFixed(2)}</h3>
+                        <h4 class="text-info mb-0">${totalSalary.toFixed(2)}</h4>
                         <small class="text-muted">${paidSalary} Paid, ${pendingSalary} Pending</small>
                     </div>
                 </div>
@@ -158,7 +135,7 @@ function format(data) {
             <!-- Detailed Tables -->
             <div class="row">
                 <div class="col-md-6">
-                    <h6 class="mb-3">
+                    <h6 class="mb-2">
                         <i class="bi bi-calendar-event me-2"></i>Recent Attendance
                     </h6>
                     <table class="table table-sm table-hover">
@@ -168,12 +145,12 @@ function format(data) {
                                 <th>Status</th>
                             </tr>
                         </thead>
-                        <tbody>${attendanceRows}</tbody>
+                        <tbody >${attendanceRows}</tbody>
                     </table>
                 </div>
                 <div class="col-md-6">
-                    <h6 class="mb-3">
-                        <i class="bi bi-currency-dollar me-2"></i>Recent Salary
+                    <h6 class="mb-2">
+                        <i class="bi bi-currency-rupee me-2"></i>Recent Salary
                     </h6>
                     <table class="table table-sm table-hover">
                         <thead class="table-light">

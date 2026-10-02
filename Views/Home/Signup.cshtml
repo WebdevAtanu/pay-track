@@ -1,7 +1,7 @@
-﻿@model LoginViewModel
+@model RegisterViewModel
 @using payroll_mvc.ViewModels
 @{
-    ViewData["Title"] = "Login";
+    ViewData["Title"] = "Sign Up";
 }
 
 @if (!ViewData.ModelState.IsValid)
@@ -20,19 +20,15 @@
         </div>
 
         <!-- Title -->
-        <h3 class="fw-bold mt-2 text-black-50">Login</h3>
-        <p class="text-muted">Access your account</p>
+        <h3 class="fw-bold mt-2 text-black-50">Sign Up</h3>
+        <p class="text-muted">Create your admin account</p>
 
-        <!-- Login Form -->
-        <form method="post" asp-action="Login" class="text-start p-2">
+        <!-- Signup Form -->
+        <form method="post" asp-action="Signup" class="text-start p-2">
             <div class="mb-2">
-                <label asp-for="LoginType" class="form-label">Login Type</label>
-                <select asp-for="LoginType" class="form-control" required>
-                    <option value="">Select login type</option>
-                    <option value="Admin">Admin</option>
-                    <option value="Employee">Employee</option>
-                </select>
-                <span asp-validation-for="LoginType" class="text-danger"></span>
+                <label asp-for="Name" class="form-label">Name</label>
+                <input asp-for="Name" class="form-control" placeholder="Enter name" required />
+                <span asp-validation-for="Name" class="text-danger"></span>
             </div>
 
             <div class="mb-2">
@@ -43,11 +39,12 @@
 
             <div class="mb-2">
                 <label asp-for="Password" class="form-label">Password</label>
-                <input asp-for="Password" class="form-control" placeholder="Enter password" required />
+                <input asp-for="Password" class="form-control" placeholder="Create password" required />
                 <span asp-validation-for="Password" class="text-danger"></span>
             </div>
 
-            <button type="submit" class="btn btn-primary w-100">Login</button>
+            <button type="submit" class="btn btn-success w-100">Sign Up</button>
         </form>
+
     </div>
 </div>

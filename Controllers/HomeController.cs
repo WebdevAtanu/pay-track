@@ -31,8 +31,18 @@ namespace payroll_mvc.Controllers
             return View();
         }
 
-        [HttpPost("register")]
-        public IActionResult Register(RegisterViewModel model)
+        [HttpGet("signup")]
+        public IActionResult Signup()
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Dashboard", "Home");
+            }
+            return View();
+        }
+
+        [HttpPost("signup")]
+        public IActionResult Signup(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -40,7 +50,7 @@ namespace payroll_mvc.Controllers
                 if (existingUser != null)
                 {
                     ModelState.AddModelError("", "Email already exists");
-                    return View("Index", model);
+                    return View("Signup", model);
                 }
 
                 string passwordHash = BCrypt.Net.BCrypt.HashPassword(model.Password);
@@ -58,7 +68,7 @@ namespace payroll_mvc.Controllers
                 _context.SaveChanges();
                 return RedirectToAction("Index");
             }
-            return RedirectToAction("Index");
+            return View("Signup", model);
         }
 
         [HttpPost("login")]
