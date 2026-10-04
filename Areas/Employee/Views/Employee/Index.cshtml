@@ -120,6 +120,7 @@
 
             <div class="modal-footer">
                 <form id="empDeleteForm" method="post">
+                    @Html.AntiForgeryToken()
                     <button type="submit" class="btn btn-danger">Yes, Delete</button>
                 </form>
                 <button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
@@ -128,3 +129,25 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var employeeDeleteModal = document.getElementById("employeeDeleteModal");
+
+            if (!employeeDeleteModal) {
+                return;
+            }
+
+            employeeDeleteModal.addEventListener("show.bs.modal", function (event) {
+                var button = event.relatedTarget;
+                var id = button.getAttribute("data-id");
+                var empName = button.getAttribute("data-name");
+
+                document.getElementById("empNameText").textContent = empName;
+                var form = document.getElementById("empDeleteForm");
+                form.action = "@Url.Action("Delete", "Employee", new { area = "Employee" })/" + id;
+            });
+        });
+    </script>
+}

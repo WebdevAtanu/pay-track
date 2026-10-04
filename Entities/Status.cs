@@ -10,5 +10,6 @@ namespace payroll_mvc.Entities
         public Guid StatusId { get; set; }
         public string? StatusName { get; set; }
         public bool? IsActive { get; set; }
+        public DateTime? CreatedAt { get; set; } = DateTime.Now;
     }
 }

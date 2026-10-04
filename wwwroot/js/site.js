@@ -27,8 +27,8 @@ function format(data) {
     if (data.EmployeeAttendances.length > 0) {
         data.EmployeeAttendances.slice(0, 5).forEach(a => {
             const statusClass = a.Status === 'Present' ? 'bg-success' :
-                              a.Status === 'Absent' ? 'bg-danger' :
-                              a.Status === 'Leave' ? 'bg-warning' : 'bg-secondary';
+                a.Status === 'Absent' ? 'bg-danger' :
+                    a.Status === 'Leave' ? 'bg-warning' : 'bg-secondary';
             attendanceRows += `
                 <tr>
                     <td>${a.Date ? a.Date.split('T')[0] : 'N/A'}</td>

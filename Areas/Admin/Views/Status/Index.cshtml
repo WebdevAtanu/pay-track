@@ -1,0 +1,132 @@
+@model List<StatusViewModel>
+
+@{
+    ViewData["Title"] = "Attendance Status";
+}
+
+<div class="container mt-2">
+
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <h4 class="fw-bold">Attendance Status List</h4>
+        <a asp-action="Add" class="btn btn-primary shadow-sm">+ Add Status</a>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-body table-responsive p-0" style="max-height:600px;">
+
+            <table class="table table-hover align-middle mb-0">
+
+                <thead class="table-dark sticky-top">
+                    <tr>
+                        <th>Status Name</th>
+                        <th>Created At</th>
+                        <th>Status</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            var statusClass = item.IsActive ? "text-success fw-semibold" : "text-danger fw-semibold";
+                            var statusText = item.IsActive ? "Active" : "Inactive";
+
+                            <tr>
+                                <td>@item.StatusName</td>
+                                <td>@item.CreatedAt.ToString("dd MMM yyyy")</td>
+                                <td class="@statusClass">
+                                    <form asp-action="ActiveToggle" asp-route-id="@item.StatusId" method="post" style="display:inline;">
+                                        <button type="submit" class="border-0 bg-white @statusClass">@statusText</button>
+                                    </form>
+                                </td>
+                                <td>
+                                    <div class="d-flex justify-content-center gap-1">
+                                        <a asp-action="Edit" asp-route-id="@item.StatusId" class="btn btn-sm btn-warning w-full">Edit</a>
+                                        <button type="button"
+                                                class="btn btn-sm btn-danger w-full"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#statusDeleteModal"
+                                                data-id="@item.StatusId"
+                                                data-name="@item.StatusName">
+                                            Delete
+                                        </button>
+
+                                    </div>
+                                </td>
+
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="4" class="text-center text-muted">
+                                No attendance status found
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+
+</div>
+
+@* ========================================= status delete modal =================================== *@
+<div class="modal fade" id="statusDeleteModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h5 class="modal-title">Confirm Delete</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body">
+                Are you sure you want to delete - <span id="statusNameText"></span>?
+            </div>
+
+            <div class="modal-footer">
+                <form id="statusDeleteForm" method="post">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                </form>
+
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cancel
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+            var statusDeleteModal = document.getElementById("statusDeleteModal");
+
+            if (!statusDeleteModal) {
+                return;
+            }
+
+            statusDeleteModal.addEventListener("show.bs.modal", function (event) {
+
+                var button = event.relatedTarget;
+
+                var id = button.getAttribute("data-id");
+                var statusName = button.getAttribute("data-name");
+
+                document.getElementById("statusNameText").textContent = statusName;
+                var form = document.getElementById("statusDeleteForm");
+                form.action = "@Url.Action("Delete", "Status", new { area = "Admin" })/" + id;
+            });
+        });
+    </script>
+}

@@ -2,10 +2,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using payroll_mvc.Areas.Admin.ViewModels;
+using payroll_mvc.Areas.Employee.ViewModels;
 using payroll_mvc.Controllers;
 using payroll_mvc.Data;
 using payroll_mvc.Entities;
-using payroll_mvc.ViewModels;
 
 namespace payroll_mvc.Areas.Admin.Controllers
 {
@@ -61,7 +61,60 @@ namespace payroll_mvc.Areas.Admin.Controllers
             var selectedEndDate = endDate ?? DateTime.Today;
 
             var attendanceDetails = await GetAllEmployeesAttendance(selectedStartDate, selectedEndDate);
+            var statusOptions = await _context.Statuses
+            .Where(s => s.IsActive == true)
+            .Select(s => new StatusViewModel
+            {
+                StatusId = s.StatusId,
+                StatusName = s.StatusName,
+                IsActive = s.IsActive ?? true,
+                CreatedAt = s.CreatedAt ?? DateTime.Now
+            })
+            .ToListAsync();
+
+            ViewData["StatusOptions"] = statusOptions;
             return View(attendanceDetails);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> UpdateAttendance(List<AttendanceViewModel> model, DateTime startDate, DateTime endDate)
+        {
+            if (model == null || !model.Any())
+            {
+                return RedirectToAction("Index", new { startDate = startDate.ToString("yyyy-MM-dd"), endDate = endDate.ToString("yyyy-MM-dd") });
+            }
+
+            foreach (var item in model)
+            {
+                if (item == null) continue;
+
+                var existing = await _context.Attendances
+                    .FirstOrDefaultAsync(x =>
+                        x.EmployeeId == item.EmployeeId &&
+                        x.Date.HasValue &&
+                        x.Date.Value.Date == item.Date.Value.Date);
+
+                if (existing != null)
+                {
+                    existing.Status = item.Status;
+                    existing.Note = item.Note;
+                }
+                else if (item.Date.HasValue)
+                {
+                    _context.Attendances.Add(new Attendance
+                    {
+                        AttendanceId = Guid.NewGuid(),
+                        EmployeeId = item.EmployeeId,
+                        Date = item.Date.Value,
+                        Status = item.Status,
+                        Note = item.Note
+                    });
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index", new { startDate = startDate.ToString("yyyy-MM-dd"), endDate = endDate.ToString("yyyy-MM-dd") });
         }
 
         public async Task<IActionResult> FaceAttendance(Guid id, DateTime? date)

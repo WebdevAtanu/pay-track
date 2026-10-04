@@ -1,0 +1,44 @@
+@model StatusViewModel
+
+@{
+    ViewData["Title"] = "Add Attendance Status";
+}
+
+@if (TempData.ContainsKey("ErrorMessage"))
+{
+    <div class="alert alert-danger">
+        @TempData["ErrorMessage"]
+    </div>
+}
+
+<h4 class="mb-4">Add Attendance Status</h4>
+
+<form asp-action="Add" method="post" class="card p-4 shadow-sm">
+
+    <div class="row">
+        <div class="col-md-6 mb-3">
+            <label asp-for="StatusName" class="form-label">
+                Status Name
+            </label>
+
+            <input asp-for="StatusName"
+                   class="form-control"
+                   placeholder="Present" />
+
+            <span asp-validation-for="StatusName"
+                  class="text-danger">
+            </span>
+        </div>
+    </div>
+
+    <div class="mt-3 d-flex justify-content-end gap-2">
+        <a asp-action="Index" class="btn btn-secondary">
+            Cancel
+        </a>
+
+        <button type="submit" class="btn btn-primary">
+            Add
+        </button>
+    </div>
+
+</form>

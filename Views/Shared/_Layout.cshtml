@@ -95,6 +95,14 @@
                                                 IconClass = "bi bi-person-workspace",
                                                 MenuName = "Department"
                                                 })
+
+                        @await Html.PartialAsync("_Menu",new MenuViewModel {
+                                                Area = "Admin",
+                                                Controller = "Status",
+                                                Action = "Index",
+                                                IconClass = "bi bi-check-circle",
+                                                MenuName = "Status"
+                                                })
                     </ul>
                                         }
 
@@ -132,5 +140,7 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js"></script>
     <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    @* Render the Scripts section if defined in the view *@
+    @await RenderSectionAsync("Scripts", required: false) 
 </body>
 </html>

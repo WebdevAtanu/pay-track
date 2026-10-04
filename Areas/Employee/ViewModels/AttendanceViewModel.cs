@@ -1,4 +1,4 @@
-﻿namespace payroll_mvc.Areas.Admin.ViewModels
+﻿namespace payroll_mvc.Areas.Employee.ViewModels
 {
     public class AttendanceViewModel
     {

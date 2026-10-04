@@ -1,4 +1,7 @@
 @model List<AttendanceViewModel>
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using payroll_mvc.Areas.Employee.ViewModels
+@using payroll_mvc.ViewModels
 
 @{
     var startDate = Context.Request.Query["startDate"].ToString();
@@ -12,6 +15,8 @@
     {
         endDate = DateTime.Today.ToString("yyyy-MM-dd");
     }
+
+    var statusOptions = ViewData["StatusOptions"] as List<StatusViewModel>;
 }
 
 <div class="container mt-2">
@@ -62,65 +67,79 @@
 
     else
     {
-        <div class="overflow-auto" style="max-height:60vh;">
-            <table class="table table-bordered table-striped" id="attendanceTable">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Date</th>
-                        <th>Employee Code</th>
-                        <th>Name</th>
-                        <th>Status</th>
-                        <th>Comment</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @for (int i = 0; i < Model.Count; i++)
-                    {
-                        <tr>
-                            <td>@Model[i]?.Date?.ToString("dd-MM-yyyy")</td>
-                            <td>@Model[i]?.EmpCode</td>
-                            <td>@Model[i]?.Name</td>
-                            <td>
-                                @{
-                                    var status = Model[i]?.Status ?? "Absent";
-                                    var badgeClass = status switch
-                                    {
-                                        "Present" => "bg-success text-white",
-                                        "Absent" => "bg-danger text-white",
-                                        "Leave" => "bg-warning text-white",
-                                        _ => "bg-secondary"
-                                    };
-                                }
+        <form method="post" asp-action="UpdateAttendance">
+            <input type="hidden" name="startDate" value="@startDate" />
+            <input type="hidden" name="endDate" value="@endDate" />
 
-                                <span class="badge @badgeClass">
-                                    @status
-                                </span>
-                            </td>
-                            <td>@Model[i]?.Note</td>
-                            <td>
-                                @if (Model[i]?.Status != "Present")
-                                {
-                                    <a asp-area="Admin" asp-action="FaceAttendance"
-                                       asp-controller="Attendance"
-                                       asp-route-id="@Model[i].EmployeeId"
-                                       asp-route-date="@Model[i]?.Date?.ToString("yyyy-MM-dd")"
-                                       class="btn btn-sm btn-warning w-100">
-                                        Scan Face
-                                    </a>
-                                }
-                                else
-                                {
-                                    <span class="btn btn-sm btn-secondary w-100 disabled">
-                                        Marked
-                                    </span>
-                                }
-                            </td>
+            <div class="overflow-auto" style="max-height:60vh;">
+                <table class="table table-bordered table-striped" id="attendanceTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Date</th>
+                            <th>Employee Code</th>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                            <th>Comment</th>
                         </tr>
-                    }
-                </tbody>
-            </table>
-        </div>
+                    </thead>
+                    <tbody>
+                        @for (int i = 0; i < Model.Count; i++)
+                        {
+                            <tr>
+                                <td>@Model[i]?.Date?.ToString("dd-MM-yyyy")</td>
+                                <td>@Model[i]?.EmpCode</td>
+                                <td>@Model[i]?.Name</td>
+                                <td>
+                                    @{
+                                        var status = Model[i]?.Status ?? "Absent";
+                                        var badgeClass = status switch
+                                        {
+                                            "Present" => "bg-success text-white",
+                                            "Absent" => "bg-danger text-white",
+                                            "Leave" => "bg-warning text-white",
+                                            _ => "bg-secondary"
+                                        };
+                                    }
+
+                                    <span class="badge @badgeClass">
+                                        @status
+                                    </span>
+                                </td>
+                                <td>
+                                    <select name="[@i].Status" class="form-select form-select-sm">
+
+                                        @if (statusOptions != null && statusOptions.Any())
+                                        {
+                                            foreach (var option in statusOptions)
+                                            {
+                                                <option value="@option.StatusName"
+                                                        selected="@(option.StatusName == status)">
+                                                    @option.StatusName
+                                                </option>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <option value="">No status available</option>
+                                        }
+
+                                    </select>
+                                    <input type="hidden" name="[@i].EmployeeId" value="@Model[i].EmployeeId" />
+                                    <input type="hidden" name="[@i].Date" value="@Model[i]?.Date?.ToString("yyyy-MM-ddTHH:mm:ss")" />
+                                </td>
+                                <td>
+                                    <input type="text" name="[@i].Note" value="@Model[i]?.Note" class="form-control form-control-sm" placeholder="Add comment" />
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex justify-content-end mt-3">
+                <button type="submit" class="btn btn-success px-4">Update</button>
+            </div>
+        </form>
     }
 </div>
 

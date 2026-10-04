@@ -42,4 +42,13 @@ namespace payroll_mvc.Areas.Admin.ViewModels
         public decimal? NetSalary { get; set; }
         public string? Status { get; set; }
     }
+
+    public class StatusViewModel
+    {
+        public Guid StatusId { get; set; }
+        [Required]
+        public string? StatusName { get; set; }
+        public bool IsActive { get; set; }
+        public DateTime CreatedAt { get; set; }
+    }
 }
